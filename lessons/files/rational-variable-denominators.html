@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<script>document.documentElement.dataset.theme="light"</script>
+<meta name="lesson-group" content="1.5 Rational Equations">
+<title>Rational Equations: Variables in the Denominator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Kalam:wght@400;700&family=STIX+Two+Text:ital@0;1&display=swap">
+<style>
+/* Layout: one notebook page at a time on graph-paper ground; header (title, theme, key), page, footer (back / listen / captions / next). */
+:root{
+  --ground:#e8f0f9; --grid:#d8e5f3; --paper:#fbfdff; --ink:#1b2a3d; --muted:#536479; --rule:#dbe5f0; --sel:#dde9f8; --accent:#2c64b5;
+  --green:#18794a; --blue:#1d55b5; --red:#bf3128; --orange:#b45309; --hl-bg:#fff176; --hl-fg:#1b2a3d;
+  --btn:#26579f; --btn-fg:#ffffff; --chip:#eef4fb; --shadow:0 1px 2px rgba(20,50,90,.08),0 8px 24px rgba(20,50,90,.08);
+  --play:#2c64b5; --play-done:#1d4785; --play-fg:#ffffff; --play-ring:rgba(44,100,181,.55);
+  --f-ui:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-hand:"Kalam","Comic Sans MS","Bradley Hand",cursive;
+  --f-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --orange:#ffb366; --capbg:#0c0912; --capfg:#f4f0fb; --capcur:#ffe37a; --ring:rgba(255,227,122,.35); --ringbg:rgba(255,226,110,.07);
+  --ground:#141019; --grid:#1f1929; --paper:#1c1726; --ink:#ede7f8; --muted:#a99fc0; --rule:#30284a; --sel:#30264b; --accent:#bba5f5;
+  --green:#5fd08f; --blue:#8ab8ff; --red:#ff8d80; --hl-bg:#665c00; --hl-fg:#fff8b5;
+  --btn:#c6b4f7; --btn-fg:#1a1428; --chip:#262035; --play:#b9a2f4; --play-done:#8d70de; --play-fg:#1a1428; --play-ring:rgba(185,162,244,.55); --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35); color-scheme:dark }}
+:root[data-theme="dark"]{ --orange:#ffb366; --capbg:#0c0912; --capfg:#f4f0fb; --capcur:#ffe37a; --ring:rgba(255,227,122,.35); --ringbg:rgba(255,226,110,.07);
+  --ground:#141019; --grid:#1f1929; --paper:#1c1726; --ink:#ede7f8; --muted:#a99fc0; --rule:#30284a; --sel:#30264b; --accent:#bba5f5;
+  --green:#5fd08f; --blue:#8ab8ff; --red:#ff8d80; --hl-bg:#665c00; --hl-fg:#fff8b5;
+  --btn:#c6b4f7; --btn-fg:#1a1428; --chip:#262035; --play:#b9a2f4; --play-done:#8d70de; --play-fg:#1a1428; --play-ring:rgba(185,162,244,.55); --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35); color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+/* player body: slide menu on the left, page on the right */
+.body{display:grid;grid-template-columns:var(--menuw) minmax(0,1fr) var(--sidew);grid-template-rows:minmax(0,1fr);min-height:0;overflow:hidden;position:relative}
+.app{--menuw:272px;--sidew:0px;--capfs:1.15rem}
+.app.mclosed{--menuw:0px}
+.app.capside{--sidew:min(340px,30vw)}
+.app.cap-l{--capfs:1.4rem}.app.cap-xl{--capfs:1.7rem}
+.app.mclosed .menu{visibility:hidden}
+.menu{background:var(--paper);border-right:1px solid var(--rule);overflow-y:auto;padding:14px 10px 24px;min-width:0}
+.menu h3{margin:14px 10px 6px;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.menu h3:first-child{margin-top:2px}
+.mi{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:left;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.93rem;line-height:1.3}
+.mi:hover{background:var(--chip)}
+.mi .no{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:600;border:1.5px solid var(--rule);font-variant-numeric:tabular-nums;color:var(--muted)}
+.mi .tt{flex:1;min-width:0}
+.mi.seen .no{border-color:var(--accent);color:var(--accent)}
+.mi.seen .no::after{content:"✓";font-size:.8rem}
+.mi.seen .no span{display:none}
+.mi[aria-current="true"]{background:var(--sel);font-weight:600}
+.mi[aria-current="true"] .no{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.mi[aria-current="true"] .no::after{content:none}.mi[aria-current="true"] .no span{display:inline}
+.scrim{display:none}
+@media (max-width:859px){
+  .body,.app.mclosed .body{grid-template-columns:minmax(0,1fr)}
+  .menu{position:absolute;inset:0 auto 0 0;width:min(300px,86vw);z-index:8;box-shadow:var(--shadow);padding-left:max(10px,env(safe-area-inset-left,0px))}
+  .app.mclosed .menu{display:none}
+  .app:not(.mclosed) .scrim{display:block;position:absolute;inset:0;background:rgba(20,14,32,.45);z-index:7}
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* header */
+header{background:var(--paper);border-bottom:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.hbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-block:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.brand small{font-weight:400;color:var(--muted);margin-left:8px;font-size:.85rem}
+.hbar .sp{flex:1}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+.tbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--chip);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.9rem}
+.tbtn svg{width:16px;height:16px}
+.tbtn[aria-pressed="true"]{border-color:var(--ink)}
+.progress{height:4px;background:var(--rule)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+
+/* page */
+main{overflow-y:auto;min-width:0;padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:980px;margin:0 auto;background:var(--paper);border-radius:6px;box-shadow:var(--shadow);
+  padding:20px clamp(16px,3.5vw,40px) 26px;position:relative}
+.page::after{content:attr(data-pg);position:absolute;bottom:10px;right:18px;color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.slide{display:none}
+.slide.cur{display:flex;flex-direction:column;gap:13px;animation:fade .25s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
+h1,h2{margin:0;letter-spacing:-.02em;text-wrap:balance;line-height:1.15}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);font-weight:700}
+h2{font-size:clamp(1.35rem,3vw,1.85rem);font-weight:700}
+p{margin:0;max-width:65ch}
+.lead{font-size:1.15rem;color:var(--muted)}
+.prob{font-size:clamp(1.4rem,3.4vw,1.9rem);text-align:center;padding:0}
+.m{font-family:var(--f-math)}
+.m i{font-style:italic}
+sup{font-size:.62em;line-height:0}
+
+/* revealable steps */
+[data-s]{transition:opacity .35s ease,transform .35s ease}
+[data-s]:not(.on){visibility:hidden;opacity:0;transform:translateY(6px)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* student-writes lines: handwriting + pencil in margin */
+.hw{font-family:var(--f-hand);font-size:clamp(1.3rem,3.2vw,1.65rem);line-height:1.35;position:relative;padding-left:40px;min-width:0}
+.hw::before{content:"";position:absolute;left:0;top:.2em;width:26px;height:26px;border-radius:50%;background:var(--chip);border:1.5px dashed var(--muted)}
+.hw::after{content:"";position:absolute;left:6px;top:calc(.2em + 6px);width:15px;height:15px;background:var(--ink);
+  -webkit-mask:var(--pencil) center/contain no-repeat;mask:var(--pencil) center/contain no-repeat}
+:root{--capbg:#172a42; --capfg:#ffffff; --capcur:#ffe37a; --ring:rgba(233,197,63,.45); --ringbg:rgba(255,226,110,.14);
+  --pencil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3E%3C/svg%3E");
+  --check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E")}
+.hw sup{font-size:.6em}
+
+/* the signal system: color + a second cue */
+.gcf{display:inline-block;color:var(--green);border:2px dashed currentColor;border-radius:4px;padding:0 10px;font-weight:700}
+.green{color:var(--green);font-weight:700}
+.work{color:var(--blue)}
+.work::before{content:"→ ";font-family:var(--f-ui);font-size:.8em;opacity:.85}
+.bin{color:var(--red);text-decoration:underline double;text-decoration-thickness:2px;text-underline-offset:5px;border-radius:4px;padding:0 2px;transition:background .3s}
+.bin.hl{background:var(--hl-bg);color:var(--hl-fg);text-decoration-color:var(--red)}
+.fin{display:inline-block;border:2.5px solid var(--ink);border-radius:999px;padding:2px 18px 2px 12px;font-weight:700}
+.fin::before{content:"";display:inline-block;vertical-align:-3px;margin-right:8px;width:22px;height:22px;background:var(--ink);-webkit-mask:var(--check) center/contain no-repeat;mask:var(--check) center/contain no-repeat}
+.tip{border:2px solid var(--red);border-left-width:8px;border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:flex-start;max-width:640px}
+.tip b.lab{flex:none;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red);border:1.5px solid var(--red);border-radius:4px;padding:1px 6px;margin-top:3px}
+.tip .hwt{font-family:var(--f-hand);font-size:1.3rem;line-height:1.3;color:var(--red)}
+.tip p{font-size:1rem}
+
+/* split halves */
+.pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;max-width:640px}
+.pair > span:first-child{text-align:right}
+.divider{display:flex;flex-direction:column;align-items:center;font-family:var(--f-ui);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.divider::before,.divider::after{content:"";width:0;height:14px;border-left:2px dashed var(--muted)}
+.stack{display:flex;flex-direction:column;gap:9px}
+.cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-width:700px}
+.cols > div{text-align:center}
+.cols .t{font-family:var(--f-math);font-size:1.4rem}
+.cols .hw{padding-left:0}.cols .hw::before,.cols .hw::after{display:none}
+.factorrow{display:flex;flex-direction:column;gap:6px}
+
+/* steps slide */
+.steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;font-size:1.15rem}
+.steps li{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.steps .n{font-weight:700;font-variant-numeric:tabular-nums;width:1.6em;flex:none}
+.blank{display:inline-block;min-width:7.5em;border-bottom:2px dotted var(--muted);text-align:center;position:relative}
+.blank .fill{font-family:var(--f-hand);font-size:1.35rem;color:var(--green);font-weight:700}
+.blank .fill::before{content:"";display:inline-block;width:14px;height:14px;margin-right:4px;background:var(--green);-webkit-mask:var(--pencil) center/contain no-repeat;mask:var(--pencil) center/contain no-repeat}
+
+/* legend */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.lg{display:flex;gap:14px;align-items:center;border:1px solid var(--rule);border-radius:8px;padding:12px 14px;min-width:0}
+.lg .sw{flex:none;min-width:96px;text-align:center;font-size:1.25rem}
+.lg .sw .hw{padding-left:36px;font-size:1.3rem}
+.lg p{font-size:.95rem}
+.lg p b{display:block}
+
+/* step tracker: which of the 4 steps is happening now */
+.tracker{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;counter-reset:st}
+.tracker li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1.5px solid var(--rule);color:var(--muted);font-size:.84rem;line-height:1.2;min-width:0}
+.tracker .n{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.78rem;border:1.5px solid currentColor}
+.tracker li.done{color:var(--ink);border-color:var(--accent)}
+.tracker li.done .n{border-color:var(--accent);color:var(--accent)}
+.tracker li.done .n span{display:none}.tracker li.done .n::after{content:"✓"}
+.tracker li.now{background:var(--accent);border-color:var(--accent);color:var(--paper);font-weight:600}
+.tracker li.now .n{border-color:var(--paper);color:var(--paper)}
+[data-tag]{position:relative;padding-right:84px}
+.stag{position:absolute;right:0;top:.25em;font-family:var(--f-ui);font-size:.72rem;font-weight:600;letter-spacing:.04em;white-space:nowrap;
+  color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:1px 9px;line-height:1.5}
+/* spotlight: earlier lines fade so the newest one stands out */
+.slide.worked [data-s].on.past{opacity:.45}
+.slide.worked [data-s].on.now{opacity:1;border-radius:12px;background:var(--ringbg);box-shadow:0 0 0 4px var(--ringbg),0 0 0 5px var(--ring)}
+@keyframes write{from{clip-path:inset(-12px 100% -12px -12px)}to{clip-path:inset(-12px -12px -12px -12px)}}
+.slide [data-s].on.write{animation:write 1.4s cubic-bezier(.3,.1,.3,1) both}
+/* the common binomial as one chunk */
+.chunk{display:inline-block;background:var(--hl-bg);color:var(--hl-fg);border:2px solid var(--red);border-radius:10px;padding:0 10px;margin:0 2px;line-height:1.3}
+.left{font-weight:700;border-bottom:3px solid var(--ink);padding:0 2px}
+.think{font-family:var(--f-ui);font-size:.95rem;color:var(--muted);display:block;margin-bottom:2px}
+@media (max-width:620px){
+  .tracker{grid-template-columns:repeat(2,minmax(0,1fr))}
+  [data-tag]{padding-right:0}.stag{display:none}
+}
+
+/* practice */
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:720px}
+.choice{border:2px solid var(--rule);background:var(--paper);border-radius:10px;padding:12px 14px;font-family:var(--f-math);font-size:1.3rem;cursor:pointer;text-align:left;display:flex;gap:10px;align-items:center}
+.choice:hover{border-color:var(--muted)}
+.choice .k{font-family:var(--f-ui);font-size:.8rem;font-weight:700;border:1.5px solid currentColor;border-radius:4px;width:22px;height:22px;display:inline-grid;place-items:center;flex:none}
+.choice.right{border-color:var(--green);border-width:3px}
+.choice.wrong{border-color:var(--red);border-style:dashed}
+.fb{min-height:1.6em;font-size:1rem;display:flex;gap:8px;align-items:flex-start;max-width:720px}
+.fb .ic{flex:none;font-weight:700;border-radius:4px;padding:0 6px;font-size:.85rem;margin-top:2px}
+.fb.ok .ic{color:var(--green);border:1.5px solid var(--green)}
+.fb.no .ic{color:var(--red);border:1.5px dashed var(--red)}
+.helpers{display:flex;gap:8px;flex-wrap:wrap}
+.helpers button{border:1.5px solid var(--rule);background:var(--chip);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.92rem}
+.helpers button[aria-expanded="true"]{border-color:var(--ink)}
+.reveal{border-top:1px solid var(--rule);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.reveal .lab{font-size:.75rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.opt{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--muted);color:var(--muted);border-radius:4px;padding:1px 8px}
+.list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px;font-size:1.08rem;max-width:62ch}
+
+/* footer */
+footer{background:var(--paper);border-top:1px solid var(--rule);position:sticky;bottom:0;z-index:5;padding-bottom:env(safe-area-inset-bottom,0px)}
+.capwrap{background:var(--capbg);color:var(--capfg)}
+.caption{padding-block:7px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-size:var(--capfs);line-height:1.45;color:var(--capfg);display:flex;gap:12px;align-items:flex-start}
+.caption .cc,.sidecap .cc{flex:none;font-size:.72rem;font-weight:700;letter-spacing:.06em;border:1.5px solid var(--capfg);border-radius:4px;padding:1px 5px;margin-top:3px}
+.ctext{position:relative;flex:1;min-width:0;overflow-y:auto;scroll-behavior:smooth}
+.caption .ctext{height:calc(1.45em * 2 + 2px)}
+.sen{transition:color .2s,opacity .2s}
+.sen.said{opacity:.6}
+.sen.cur{color:var(--capcur)}
+.sidecap{display:none;background:var(--capbg);color:var(--capfg);padding:18px 18px 18px 20px;min-width:0;overflow:hidden;flex-direction:column;gap:12px}
+.sidecap .ctext{font-size:calc(var(--capfs) * 1.1);line-height:1.55}
+.sidecap .shead{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.app.capside .sidecap{display:flex}
+.app.capside .capwrap,.app.capoff .capwrap{display:none}
+@media (max-width:859px){ .app.capside .sidecap{display:none} .app.capside:not(.capoff) .capwrap{display:block} }
+.caption .cid,.sidecap .cid{flex:none;font-size:.7rem;color:var(--capfg);opacity:.65;margin-top:4px;font-variant-numeric:tabular-nums}
+.play{--p:0%;display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:7px 18px 7px 8px;cursor:pointer;font-weight:700;font-size:1rem;
+  color:var(--play-fg);background:linear-gradient(90deg,var(--play-done) var(--p),var(--play) var(--p));box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.play .pi{width:26px;height:26px;border-radius:50%;background:var(--play-fg);color:var(--play);display:grid;place-items:center;flex:none}
+.play .pi svg{width:16px;height:16px}
+.play:disabled{opacity:.5;cursor:default;background:var(--chip);color:var(--muted)}
+.play:disabled .pi{background:var(--muted);color:var(--chip)}
+.play.nudge{animation:nudge 1.6s ease 2}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 var(--play-ring)}50%{box-shadow:0 0 0 8px transparent}}
+.play{min-width:10.5em}
+#next{min-width:9.6em;justify-content:center}
+.stepinfo{min-width:7em;text-align:right}
+.count{min-width:4.6em;text-align:right}
+#linkBtn{min-width:10.5em;justify-content:center}
+.showall{display:inline-flex;align-items:center;gap:0;border:1.5px solid var(--accent);color:var(--accent);background:var(--paper);border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:600}
+.showall svg{width:16px;height:16px;margin-right:6px}
+.pop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:30;width:min(320px,calc(100vw - 32px));
+  background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.pop fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pop legend{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;padding:0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1.5px solid var(--rule);border-radius:999px;overflow:hidden}
+.seg label{position:relative;text-align:center;padding:6px 4px;cursor:pointer;font-size:.88rem}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg label:has(input:checked){background:var(--accent);color:var(--paper);font-weight:600}
+.seg label:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:-3px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;cursor:pointer}
+.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:none}
+@media (max-width:620px){ .wide{display:none} .stepinfo{display:none} }
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:7px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.fbar .sp{flex:1}
+.nav{border:1.5px solid var(--ink);background:var(--paper);border-radius:999px;padding:7px 16px;cursor:pointer;font-weight:600;display:inline-flex;gap:8px;align-items:center}
+.nav.primary{background:var(--btn);color:var(--btn-fg)}
+.nav:disabled{opacity:.35;cursor:default}
+.stepinfo{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.tbtn:disabled{opacity:.55;cursor:default}
+
+/* key overlay */
+.modesw{display:inline-grid;grid-auto-flow:column;border:1.5px solid var(--accent);border-radius:999px;overflow:hidden}
+.modesw button{border:0;background:var(--paper);color:var(--accent);padding:7px 14px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:0;font-size:.9rem}
+.modesw button svg{width:15px;height:15px;flex:none;margin-right:6px}
+.modesw button[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+.chooser .box{max-width:640px;gap:18px}
+.chooser h2{font-size:1.5rem}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.modecard{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;border:2px solid var(--rule);background:var(--paper);border-radius:16px;padding:18px;cursor:pointer;color:var(--ink)}
+.modecard:hover{border-color:var(--accent);background:var(--sel)}
+.modecard .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sel);color:var(--accent)}
+.modecard .ic svg{width:24px;height:24px}
+.modecard b{font-size:1.2rem}
+.modecard .d{color:var(--muted);font-size:.95rem;line-height:1.4}
+.modecard .was{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:560px){ .modes{grid-template-columns:1fr} }
+.overlay{position:fixed;inset:0;background:rgba(10,14,20,.55);z-index:20;display:grid;place-items:center;padding:20px}
+.overlay .box{background:var(--paper);border-radius:10px;max-width:760px;width:100%;max-height:85vh;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px}
+
+@media (max-width:620px){
+  .choices{grid-template-columns:1fr}
+  .cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .brand small{display:none}
+  .page{min-height:0}
+}
+
+/* ---------- box method ---------- */
+.o0{color:var(--ink)} .og{color:var(--green)} .op{color:var(--blue)}
+.ink{font-family:var(--f-hand);font-weight:700;display:inline-block;padding:0 4px;border-radius:8px}
+.ex{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px 28px;align-items:start}
+.ex .side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.why{font-family:var(--f-ui);font-size:1rem;line-height:1.45;color:var(--muted);border-left:3px solid var(--rule);padding:4px 0 4px 12px;max-width:46ch}
+.why b{color:var(--ink)}
+.box{border-collapse:collapse;font-size:clamp(1.15rem,2.6vw,1.5rem);table-layout:fixed}
+.box th,.box td{border:2.5px solid var(--ink);text-align:center;vertical-align:middle;padding:4px 6px;height:2.7em;transition:background .3s}
+.box td{width:6.4em;background:var(--paper)}
+.box th{width:4.2em;background:var(--chip);font-weight:400}
+.box th.x{font-family:var(--f-ui);font-size:1.5em;line-height:1;color:var(--ink)}
+.box .lbl{font-family:var(--f-hand);font-size:.72em;line-height:1.15;font-weight:700}
+.box .glow{background:var(--sel)}
+.box.mini{font-size:1.05rem}
+.box.mini th,.box.mini td{height:2.2em}
+.answer{font-family:var(--f-hand);font-size:clamp(1.4rem,3.4vw,1.8rem);display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.answer .or{font-family:var(--f-ui);font-size:1rem;color:var(--muted)}
+.blank .fill::before{background:currentColor!important}
+.order{display:flex;flex-wrap:wrap;gap:6px}
+.order span{font-family:var(--f-hand);font-weight:700;border:1.5px solid currentColor;border-radius:999px;padding:0 10px;font-size:1.05rem}
+.extra{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1.5px dashed var(--muted);color:var(--muted);border-radius:4px;padding:1px 8px;margin-left:6px}
+/* UI tour */
+.tourlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tourlist li{display:flex;align-items:center;gap:14px;padding:6px 8px;border-radius:12px}
+.tourlist .chipui{flex:none;min-width:150px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:.9rem;border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:5px 12px;background:var(--paper)}
+.tourlist .chipui.solid{background:var(--accent);color:var(--paper)}
+.tourlist p{font-size:1rem}
+.tourhl{position:relative;z-index:6;box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--accent)!important;animation:tourp 1.8s ease-in-out infinite}
+@keyframes tourp{50%{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--accent),0 0 0 12px var(--sel)}}
+@media (max-width:700px){
+  .ex{grid-template-columns:minmax(0,1fr)}
+  .box{font-size:1.05rem}.box td{width:5.2em}.box th{width:3.4em}
+  .tourlist li{flex-direction:column;align-items:flex-start;gap:4px}
+}
+
+/* ---------- factoring trinomials ---------- */
+.fill-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 10px;font-size:1.15rem}
+.fill-line .hwv{font-family:var(--f-hand);font-weight:700;font-size:1.35rem}
+.pairs{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.pairs .pc{display:flex;flex-direction:column;align-items:center;gap:0;border:1.5px solid var(--rule);border-radius:12px;padding:4px 14px;min-width:5.2em;font-size:clamp(1.05rem,2.2vw,1.3rem);transition:background .3s,border-color .3s}
+.pairs .pc.glow{background:var(--sel);border-color:var(--accent)}
+.pairs .pc .ink{padding:0}
+.pairs .lab2{font-family:var(--f-ui);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);align-self:center;line-height:1.3}
+.pairs .pick{font-family:var(--f-ui);font-size:.7rem;font-weight:700;color:var(--accent)}
+.rules{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:8px 14px;align-items:center;max-width:760px}
+.rules .c{grid-row:span 2;align-self:center;font-family:var(--f-ui);font-weight:700;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;white-space:nowrap}
+.rules .b{font-family:var(--f-ui);border:2px solid var(--ink);border-radius:10px;padding:3px 12px;white-space:nowrap}
+.rules .r{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 8px;font-size:1.05rem}
+.rules .r .blank{min-width:6.5em}
+.rules .sep{grid-column:1 / -1;border-top:2px dotted var(--rule);margin:4px 0}
+.rules .rex{font-size:.9rem;color:var(--muted);width:100%}
+.lines{display:flex;flex-direction:column;gap:8px}
+@media (max-width:700px){ .rules{grid-template-columns:auto minmax(0,1fr)} .rules .c{grid-row:auto;grid-column:1 / -1;justify-self:start} }
+
+/* ---------- the X (diamond) ---------- */
+.ink.or,.or{color:var(--red)}
+.xd{position:relative;display:grid;grid-template-columns:repeat(3,4.4em);grid-template-rows:repeat(3,2.9em);align-items:center;justify-items:center;
+  font-family:var(--f-hand);font-weight:700;font-size:clamp(1.1rem,2.4vw,1.35rem);line-height:1.1;flex:none}
+.xd::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top right,transparent calc(50% - 1.6px),var(--ink) calc(50% - 1.6px),var(--ink) calc(50% + 1.6px),transparent calc(50% + 1.6px)),
+             linear-gradient(to bottom right,transparent calc(50% - 1.6px),var(--ink) calc(50% - 1.6px),var(--ink) calc(50% + 1.6px),transparent calc(50% + 1.6px))}
+.xd > *{position:relative;text-align:center;padding:0 4px;border-radius:8px;background:var(--paper)}
+.xd .t{grid-area:1/2;align-self:start}.xd .l{grid-area:2/1;justify-self:start}.xd .r{grid-area:2/3;justify-self:end}.xd .b{grid-area:3/2;align-self:end}
+.xd small{display:block;font-size:.72em;font-weight:700}
+.xd .lab{font-size:.78em;color:var(--red)}
+.ac{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:14px 30px;align-items:start}
+.ac .rule{grid-column:1 / -1;font-family:var(--f-hand);font-weight:700;font-size:clamp(1.1rem,2.4vw,1.3rem);color:var(--blue)}
+.flist{display:flex;flex-direction:column;gap:2px;font-family:var(--f-hand);font-weight:700;font-size:clamp(1.05rem,2.3vw,1.25rem);min-width:9em}
+.flist .h{font-size:.92em;border-bottom:2px solid var(--ink);margin-bottom:4px}
+.flist .row{padding:0 10px;border:2.5px solid transparent;border-radius:999px;width:max-content}
+.flist .row.pick{border-color:var(--green)}
+.xwork{display:flex;flex-direction:column;gap:6px;min-width:0;border-left:2px solid var(--ink);padding-left:18px}
+.steps6{display:flex;flex-direction:column;gap:7px;font-size:1.1rem;max-width:70ch}
+.steps6 > p{margin:0}
+.steps6 .sub{margin-left:1.6em}
+.remember{border:2px solid var(--ink);border-radius:6px;padding:10px 16px;max-width:620px;display:flex;flex-direction:column;gap:6px;font-size:1.12rem}
+.remember b{font-weight:600}
+.xrow{display:flex;flex-wrap:wrap;gap:20px 48px;align-items:center}
+.split{display:flex;flex-direction:column;gap:6px;font-family:var(--f-hand);font-weight:700;font-size:clamp(1.3rem,3vw,1.6rem)}
+@media (max-width:760px){ .ac{grid-template-columns:minmax(0,1fr)} .ac .xwork{border-left:0;padding-left:0;border-top:2px solid var(--ink);padding-top:8px} .xd{font-size:1.05rem} }
+
+/* ---------- rational equations ---------- */
+html:root{--nb-desk:#eaf0f8; --nb-hole:#e1e9f3}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;font-size:.82em;margin:0 3px}
+.frac > span{display:block;align-self:stretch;text-align:center;padding:0 3px}
+.frac > span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.frac > span:last-child{padding-top:2px}
+.prob .frac{font-size:.8em}
+.rex{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 26px;align-items:start}
+.rsteps{display:flex;flex-direction:column;gap:9px;padding-right:16px;border-right:2px dashed var(--rule);font-size:.98rem;min-width:11em}
+.rsteps .st{display:flex;align-items:center;gap:8px;padding:2px 8px 2px 2px;border-radius:999px;transition:background .3s,box-shadow .3s}
+.rsteps .st.glow{background:var(--ringbg);box-shadow:0 0 0 3px var(--ring)}
+.rsteps .st.off{color:var(--muted)}
+.rsteps .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.rsteps .st.off .num{background:none;color:var(--muted);border:1.5px dashed var(--muted)}
+.rsteps .blank{min-width:3.4em}
+.rwork{display:flex;flex-direction:column;gap:7px;min-width:0}
+.eqline{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}
+.opn{font-family:var(--f-ui);font-size:.82rem;font-weight:600;color:var(--blue)}
+.tag2{display:inline-block;font-family:var(--f-ui);font-size:.72rem;font-weight:700;letter-spacing:.06em;border:1.5px solid var(--ink);border-radius:6px;padding:0 7px;margin-left:8px;vertical-align:middle}
+.tag2.you{background:var(--ink);color:var(--paper)}
+.keyidea{background:var(--chip);border-radius:12px;padding:10px 16px;font-size:1.12rem;line-height:1.9}
+.keyidea b{font-weight:700}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills span{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--ink);border-radius:999px;padding:2px 10px 2px 3px;font-size:.85rem;font-weight:600}
+.pills span i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.72rem}
+.pills span.on{background:var(--ink);color:var(--paper)} .pills span.on i{background:var(--paper);color:var(--ink)}
+.pills span.off{border-style:dashed;color:var(--muted)} .pills span.off i{background:none;border:1.5px dashed var(--muted);color:var(--muted)}
+.yn{display:inline-flex;gap:10px;font-family:var(--f-ui);font-weight:700}
+.yn span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2.5px solid transparent}
+.yn span.pick.on{border-color:var(--green);color:var(--green)}
+.callout{border:2px solid var(--ink);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.callout h3{margin:0;font-size:1.05rem}
+.rt{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:4px 16px;align-items:stretch}
+.rt .l{display:grid;grid-template-columns:24px minmax(0,1fr);gap:0 10px;align-items:start;padding:5px 8px;border-radius:10px;border-top:1.5px solid var(--rule)}
+.rt .l .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.75rem;font-weight:700;margin-top:2px}
+.rt .l b{font-size:1.02rem}
+.rt .l p{margin:0;grid-column:2;font-size:.98rem;line-height:1.75}
+.rt .x{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:5px 10px;border-radius:10px;border-top:1.5px dashed var(--rule);font-size:1.12rem}
+.rt .glow{background:var(--ringbg);box-shadow:0 0 0 3px var(--ring)}
+.cdans{display:inline-block;border:2.5px solid var(--ink);border-radius:50%;padding:4px 16px;font-family:var(--f-hand);font-weight:700;font-size:1.1rem;white-space:nowrap}
+.callout .blank{min-width:6em}
+@media (max-width:700px){ .rt{grid-template-columns:minmax(0,1fr)} .rex{grid-template-columns:minmax(0,1fr)} .rsteps{border-right:0;padding-right:0;border-bottom:2px dashed var(--rule);padding-bottom:8px;flex-direction:row;flex-wrap:wrap} }
+.tourhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.skipbtn{border:1.5px solid var(--accent);background:var(--accent);color:var(--paper);border-radius:999px;padding:8px 18px;font-weight:600;cursor:pointer}
+.skipbtn:hover{filter:brightness(1.08)}
+
+/* ---------- notebook page ---------- */
+:root{--nb-line:#d6e3f3; --nb-margin:#f0b4bd; --nb-hole:#e9e4f2; --nb-desk:#efeaf6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--nb-line:#2a3550; --nb-margin:#5a2f3a; --nb-hole:#141019; --nb-desk:#141019}}
+:root[data-theme="dark"]{--nb-line:#2a3550; --nb-margin:#5a2f3a; --nb-hole:#141019; --nb-desk:#141019}
+body{background-image:none;background:var(--nb-desk)}
+.page{--ml:clamp(40px,6vw,64px); border-radius:4px;
+  padding-left:calc(var(--ml) + clamp(14px,2.2vw,26px));
+  background:
+    linear-gradient(90deg,transparent calc(var(--ml) - 1px),var(--nb-margin) calc(var(--ml) - 1px),var(--nb-margin) calc(var(--ml) + 1px),transparent calc(var(--ml) + 1px)),
+    repeating-linear-gradient(180deg,transparent 0 calc(2.2rem - 1px),var(--nb-line) calc(2.2rem - 1px) 2.2rem) 0 1.4rem / 100% calc(100% - 1.4rem) no-repeat,
+    var(--paper)}
+.page::before{content:"";position:absolute;left:calc(var(--ml) / 2 - 9px);top:0;bottom:0;width:18px;pointer-events:none;
+  background:radial-gradient(circle,var(--nb-hole) 0 8px,transparent 8.5px) 0 0 / 18px 33.33% repeat-y;background-position:0 16.66%}
+.tracker{display:none!important}
+.slide .eyebrow{color:var(--muted)}
+@media (max-width:700px){ .page{--ml:30px} .page::before{display:none} }
+.cuewait{visibility:hidden!important;opacity:0!important}
+
+/* ================= video-style player ================= */
+.app{grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr)}
+.body{grid-template-columns:minmax(0,1fr)!important}
+.menu{position:absolute;inset:0 auto 0 0;width:min(300px,86vw);z-index:8;box-shadow:var(--shadow)}
+.app.mclosed .menu{display:none}
+.app:not(.mclosed) .scrim{display:block;position:absolute;inset:0;background:rgba(20,14,32,.3);z-index:7}
+.hbar{gap:10px}
+.brand{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modeseg{display:inline-grid;grid-auto-flow:column;border:1.5px solid var(--accent);border-radius:999px;overflow:hidden}
+.modeseg button{border:0;background:var(--paper);color:var(--accent);padding:6px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+.modeseg button[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+/* All lessons dropdown */
+#lessonsBtn svg{width:14px;height:14px}
+#lessonsBtn .lbl3{display:none}
+@media (max-width:440px){ .app.haslessons .brand{visibility:hidden} }
+.lpop{position:fixed;z-index:30;top:48px;left:max(16px,env(safe-area-inset-left,0px));width:min(340px,calc(100vw - 32px));max-height:min(70vh,520px);overflow:auto;
+  background:var(--paper);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);padding:8px}
+.lpop h3{margin:10px 10px 4px;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lpop h3:first-child{margin-top:4px}
+.lpop button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.95rem;line-height:1.3}
+.lpop button:hover{background:var(--chip)}
+.lpop button[aria-current="true"]{background:var(--sel);font-weight:600}
+.lpop button[aria-current="true"]::after{content:" · now";font-weight:400;color:var(--muted);font-size:.85em}
+/* bottom bar */
+.scrub{position:relative;height:20px;margin:2px 16px 0;cursor:pointer;touch-action:none}
+.scrub .track{position:absolute;left:0;right:0;top:8px;height:5px;border-radius:3px;background:var(--rule);transition:height .12s,top .12s}
+.scrub:hover .track,.scrub.drag .track{top:7px;height:7px}
+.scrub .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:var(--accent)}
+.scrub .tick{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:var(--paper)}
+.scrub .knob{position:absolute;top:4px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--paper)}
+.scrub .tip{position:absolute;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:.75rem;padding:2px 8px;border-radius:6px;white-space:nowrap;pointer-events:none}
+.ctrl{display:flex;align-items:center;gap:6px;padding:2px 12px 8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.ib{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:none;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.ib:hover{background:var(--chip)}
+.ib:disabled{opacity:.3;cursor:default;background:none}
+.ib svg{width:22px;height:22px}
+.ib.main{width:46px;height:46px;background:var(--accent);color:var(--paper)}
+.ib.main:hover{filter:brightness(1.08);background:var(--accent)}
+.ib.main svg{width:24px;height:24px}
+.ib .cc{font-size:.72rem;font-weight:800;border:2px solid currentColor;border-radius:4px;padding:0 4px;line-height:1.3}
+.ib[aria-pressed="false"] .cc{opacity:.45}
+.time{font-variant-numeric:tabular-nums;font-size:.88rem;color:var(--muted);white-space:nowrap;margin-left:4px}
+.part{flex:1;min-width:0;font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:8px}
+.part small{font-weight:400;color:var(--muted);margin-left:6px}
+.pill{flex:none;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--accent);color:var(--accent);background:var(--paper);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:.88rem}
+.pill svg{width:15px;height:15px}
+#showAll[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+.pop{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+@media (max-width:620px){ #lessonsBtn .lbl2{display:none} #lessonsBtn .lbl3{display:inline} .part small,.pill .wide,.time .tot{display:none} .ctrl{gap:2px} .hbar .tbtn .lbl{display:none} .modeseg button{padding:6px 10px} }
+@media (max-width:420px){ .brand{font-size:.95rem} .brand small{display:none} }
+/* big play button over the page before a part starts */
+.stagewrap{position:relative;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.stagewrap > main{grid-area:1/1}
+.bigplay{grid-area:1/1;align-self:center;justify-self:center;z-index:4;width:96px;height:96px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--accent);color:var(--paper);display:grid;place-items:center;box-shadow:0 8px 28px rgba(40,20,80,.28);animation:bp 2s ease-in-out infinite}
+.bigplay svg{width:44px;height:44px;margin-left:6px}
+@keyframes bp{50%{transform:scale(1.06)}}
+/* end-of-part card */
+.endcard{background:var(--sel);border-bottom:1px solid var(--rule);min-height:calc(var(--capfs) * 1.45 * 2 + 16px);
+  padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.endcard:not([hidden]) + .capwrap{display:none!important}
+.endcard p{flex:1;min-width:12em}
+.endcard p{margin:0;font-weight:600}
+.endcard p small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.endcard .go{background:var(--accent);color:var(--paper)}
+</style>
+</head>
+<body>
+<div class="app mclosed">
+<header>
+  <div class="hbar">
+    <button class="tbtn" id="menuBtn" type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="lbl">Menu</span></button>
+    <button class="tbtn" id="lessonsBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="lessonsPop" hidden><span class="lbl2">All lessons</span><span class="lbl3">Lessons</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="brand">Variables in the Denominator <small>Algebra 3/4 · Notes p. 36–37</small></div>
+    <button class="tbtn" id="keyBtn" type="button" aria-label="Key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h4M7 13h10M7 17h7"/></svg><span class="lbl">Key</span></button>
+    <div class="modeseg" role="group" aria-label="How it plays"><button type="button" id="modeVideo">Video</button><button type="button" id="modeSlides">Slides</button></div>
+  </div>
+</header>
+
+<div class="body">
+<nav class="menu" id="menu" aria-label="Parts"></nav>
+<div class="scrim" id="scrim"></div>
+<div class="stagewrap">
+<main id="main">
+<div class="page" id="page" data-pg="">
+<section class="slide" data-view="welcome" data-title="Welcome" data-group="Start" data-pg="Start" data-audio="welcome-0">
+  <p class="eyebrow">Algebra 3/4 · 1.5 Rational Equations</p>
+  <h1>Variables in the Denominator</h1>
+  <p class="lead">Levels 2 and 3 of the routine. Have your notebook open to pages 36–37.</p>
+  <p class="prob m"><span class="frac"><span>3x</span><span>x + 2</span></span> = 6 &nbsp;⟶&nbsp; x = −4</p>
+</section>
+<section class="slide worked" data-view="level-2" data-title="Level 2: Key idea" data-group="Page 36" data-pg="p. 36" data-audio="level-2-0,level-2-1,level-2-2,level-2-3">
+  <p class="eyebrow">Page 36 · Variables in the Denominator · Level 2</p>
+  <div class="keyidea fill-line"><b>Key Idea:</b> A denominator can never equal <span class="blank" style="min-width:2.4em"><span class="fill" data-s="1">0</span></span>, so find the <span class="blank" style="min-width:8em"><span class="fill" data-s="1">restrictions</span></span> before you solve.</div>
+  <p class="prob m" style="text-align:left;font-size:1.3rem;margin:0"><span style="font-family:var(--f-ui);font-size:.8rem;font-weight:700;letter-spacing:.06em;margin-right:10px">TRY IT:</span><span class="frac"><span>1</span><span>2x − 4</span></span> &nbsp;→&nbsp; 2x − 4 ≠ <span class="blank" style="min-width:2em"><span class="fill" data-s="2">0</span></span> &nbsp;→&nbsp; x ≠ <span class="blank" style="min-width:2em"><span class="fill" data-s="3">2</span></span></p>
+  <div class="pills" aria-label="The five steps"><span class="on"><i>1</i>Restrict</span><span class=""><i>2</i>LCD</span><span class=""><i>3</i>× Every</span><span class=""><i>4</i>Solve</span><span class=""><i>5</i>Check</span></div>
+</section>
+<section class="slide worked" data-view="l2-example-1" data-title="Example 1" data-group="Page 36" data-pg="p. 36" data-audio="l2-example-1-0,l2-example-1-1,l2-example-1-2,l2-example-1-3,l2-example-1-4,l2-example-1-5,l2-example-1-6,l2-example-1-7,l2-example-1-8">
+  <p class="eyebrow">Page 36 · Example 1<span class="tag2">WATCH ME</span></p>
+  <p class="prob m"><span class="frac"><span>3x</span><span>x + 2</span></span> = 6</p>
+  <div class="rex">
+    <div class="rsteps"><div class="st" data-glow="1"><span class="num">1</span><span><i>x</i> ≠ <span class="blank" style="min-width:2.6em"><span class="fill" data-s="1">−2</span></span></span></div><div class="st" data-glow="2"><span class="num">2</span><span>LCD = <span class="blank" style="min-width:3.6em"><span class="fill" data-s="2">x + 2</span></span></span></div><div class="st" data-glow="3 4"><span class="num">3</span><span>× every term</span></div><div class="st" data-glow="5 6"><span class="num">4</span><span>Solve</span></div><div class="st" data-glow="7 8"><span class="num">5</span><span>Check ✓</span></div></div>
+    <div class="rwork">
+      <div class="hw eqline" data-s="3"><span class="ink o0">(x + 2)·<span class="frac"><span>3x</span><span>x + 2</span></span> = 6(x + 2)</span><span class="opn">× every term by (x + 2)</span></div><div class="hw eqline" data-s="4"><span class="ink o0">3x = 6x + 12</span></div><div class="hw eqline" data-s="5"><span class="ink o0">−3x = 12</span><span class="opn">− 6x</span></div><div class="hw eqline" data-s="6"><span class="ink o0">x = −4</span><span class="opn">÷ (−3)</span></div><div class="hw eqline" data-s="7"><span class="ink o0"><span class="frac"><span>3(−4)</span><span>−4 + 2</span></span> = <span class="frac"><span>−12</span><span>−2</span></span> = 6 ✓ &nbsp; −4 ≠ −2 ✓</span></div><div class="hw" data-s="8" style="font-size:clamp(1.4rem,3.4vw,1.75rem)"><span class="fin"><span class="ink o0">x = −4</span></span></div>
+    </div>
+  </div>
+</section>
+<section class="slide worked" data-view="l2-example-2" data-title="Example 2" data-group="Page 36" data-pg="p. 36" data-audio="l2-example-2-0,l2-example-2-1,l2-example-2-2,l2-example-2-3,l2-example-2-4,l2-example-2-5,l2-example-2-6,l2-example-2-7,l2-example-2-8">
+  <p class="eyebrow">Page 36 · Example 2<span class="tag2 you">YOUR TURN</span></p>
+  <p class="prob m"><span class="frac"><span>4x</span><span>2x − 1</span></span> = 5</p>
+  <div class="rex">
+    <div class="rsteps"><div class="st" data-glow="1"><span class="num">1</span><span><i>x</i> ≠ <span class="blank" style="min-width:2.6em"><span class="fill" data-s="1"><span class="frac"><span>1</span><span>2</span></span></span></span></span></div><div class="st" data-glow="2"><span class="num">2</span><span>LCD = <span class="blank" style="min-width:3.6em"><span class="fill" data-s="2">2x − 1</span></span></span></div><div class="st" data-glow="3 4"><span class="num">3</span><span>× every term</span></div><div class="st" data-glow="5 6"><span class="num">4</span><span>Solve</span></div><div class="st" data-glow="7 8"><span class="num">5</span><span>Check ✓</span></div></div>
+    <div class="rwork">
+      <div class="hw eqline" data-s="3"><span class="ink o0">(2x − 1)·<span class="frac"><span>4x</span><span>2x − 1</span></span> = 5(2x − 1)</span><span class="opn">× every term by (2x − 1)</span></div><div class="hw eqline" data-s="4"><span class="ink o0">4x = 10x − 5</span></div><div class="hw eqline" data-s="5"><span class="ink o0">−6x = −5</span><span class="opn">− 10x</span></div><div class="hw eqline" data-s="6"><span class="ink o0">x = <span class="frac"><span>5</span><span>6</span></span></span><span class="opn">÷ (−6)</span></div><div class="hw eqline" data-s="7"><span class="ink o0"><span class="frac"><span>10</span><span>3</span></span> ÷ <span class="frac"><span>2</span><span>3</span></span> = 5 ✓</span></div><div class="hw" data-s="8" style="font-size:clamp(1.4rem,3.4vw,1.75rem)"><span class="fin"><span class="ink o0">x = <span class="frac"><span>5</span><span>6</span></span></span></span></div>
+    </div>
+  </div>
+</section>
+<section class="slide worked" data-view="level-3" data-title="Level 3: Key idea" data-group="Page 37" data-pg="p. 37" data-audio="level-3-0,level-3-1">
+  <p class="eyebrow">Page 37 · Same Denominator · Level 3</p>
+  <div class="keyidea fill-line"><b>Key Idea:</b> When fractions share a denominator, the LCD is <span class="blank" style="min-width:3.4em"><span class="fill" data-s="1">that</span></span> denominator. Multiply <span class="blank" style="min-width:4.2em"><span class="fill" data-s="1">every</span></span> <span class="blank" style="min-width:3.6em"><span class="fill" data-s="1">term</span></span> by it.</div>
+  <div class="pills" aria-label="The five steps"><span class=""><i>1</i>Restrict</span><span class=""><i>2</i>LCD</span><span class=""><i>3</i>× Every</span><span class=""><i>4</i>Solve</span><span class="on"><i>5</i>Check</span></div>
+</section>
+<section class="slide worked" data-view="l3-example-1" data-title="Example 1" data-group="Page 37" data-pg="p. 37" data-audio="l3-example-1-0,l3-example-1-1,l3-example-1-2,l3-example-1-3,l3-example-1-4,l3-example-1-5,l3-example-1-6,l3-example-1-7,l3-example-1-8,l3-example-1-9">
+  <p class="eyebrow">Page 37 · Example 1<span class="tag2">WATCH ME</span></p>
+  <p class="prob m"><span class="frac"><span>3</span><span>x + 1</span></span> + <span class="frac"><span>4</span><span>x + 1</span></span> = 8</p>
+  <div class="rex">
+    <div class="rsteps"><div class="st" data-glow="1"><span class="num">1</span><span><i>x</i> ≠ <span class="blank" style="min-width:2.6em"><span class="fill" data-s="1">−1</span></span></span></div><div class="st" data-glow="2"><span class="num">2</span><span>LCD = <span class="blank" style="min-width:3.6em"><span class="fill" data-s="2">x + 1</span></span></span></div><div class="st" data-glow="3 4"><span class="num">3</span><span>× every term</span></div><div class="st" data-glow="5 6 7"><span class="num">4</span><span>Solve</span></div><div class="st" data-glow="8 9"><span class="num">5</span><span>Check ✓</span></div></div>
+    <div class="rwork">
+      <div class="hw eqline" data-s="3"><span class="ink o0">(x + 1)·<span class="frac"><span>3</span><span>x + 1</span></span> + (x + 1)·<span class="frac"><span>4</span><span>x + 1</span></span> = 8(x + 1)</span><span class="opn">× every term by (x + 1)</span></div><div class="hw eqline" data-s="4"><span class="ink o0">3 + 4 = 8x + 8</span></div><div class="hw eqline" data-s="5"><span class="ink o0">7 = 8x + 8</span></div><div class="hw eqline" data-s="6"><span class="ink o0">−1 = 8x</span><span class="opn">− 8</span></div><div class="hw eqline" data-s="7"><span class="ink o0">x = −<span class="frac"><span>1</span><span>8</span></span></span><span class="opn">÷ 8</span></div><div class="hw eqline" data-s="8"><span class="ink o0">x + 1 = <span class="frac"><span>7</span><span>8</span></span>: &nbsp; <span class="frac"><span>24</span><span>7</span></span> + <span class="frac"><span>32</span><span>7</span></span> = <span class="frac"><span>56</span><span>7</span></span> = 8 ✓</span></div><div class="hw" data-s="9" style="font-size:clamp(1.4rem,3.4vw,1.75rem)"><span class="fin"><span class="ink o0">x = −<span class="frac"><span>1</span><span>8</span></span></span></span></div>
+    </div>
+  </div>
+</section>
+<section class="slide worked" data-view="l3-example-2" data-title="Example 2" data-group="Page 37" data-pg="p. 37" data-audio="l3-example-2-0,l3-example-2-1,l3-example-2-2,l3-example-2-3,l3-example-2-4,l3-example-2-5,l3-example-2-6,l3-example-2-7,l3-example-2-8,l3-example-2-9">
+  <p class="eyebrow">Page 37 · Example 2<span class="tag2 you">YOUR TURN</span></p>
+  <p class="prob m"><span class="frac"><span>5</span><span>x − 2</span></span> − <span class="frac"><span>2</span><span>x − 2</span></span> = 6</p>
+  <div class="rex">
+    <div class="rsteps"><div class="st" data-glow="1"><span class="num">1</span><span><i>x</i> ≠ <span class="blank" style="min-width:2.6em"><span class="fill" data-s="1">2</span></span></span></div><div class="st" data-glow="2"><span class="num">2</span><span>LCD = <span class="blank" style="min-width:3.6em"><span class="fill" data-s="2">x − 2</span></span></span></div><div class="st" data-glow="3 4"><span class="num">3</span><span>× every term</span></div><div class="st" data-glow="5 6 7"><span class="num">4</span><span>Solve</span></div><div class="st" data-glow="8 9"><span class="num">5</span><span>Check ✓</span></div></div>
+    <div class="rwork">
+      <div class="hw eqline" data-s="3"><span class="ink o0">(x − 2)·<span class="frac"><span>5</span><span>x − 2</span></span> − (x − 2)·<span class="frac"><span>2</span><span>x − 2</span></span> = 6(x − 2)</span><span class="opn">× every term by (x − 2)</span></div><div class="hw eqline" data-s="4"><span class="ink o0">5 − 2 = 6x − 12</span></div><div class="hw eqline" data-s="5"><span class="ink o0">3 = 6x − 12</span></div><div class="hw eqline" data-s="6"><span class="ink o0">15 = 6x</span><span class="opn">+ 12</span></div><div class="hw eqline" data-s="7"><span class="ink o0">x = <span class="frac"><span>5</span><span>2</span></span></span><span class="opn">÷ 6</span></div><div class="hw eqline" data-s="8"><span class="ink o0">x − 2 = <span class="frac"><span>1</span><span>2</span></span>: &nbsp; 10 − 4 = 6 ✓</span></div><div class="hw" data-s="9" style="font-size:clamp(1.4rem,3.4vw,1.75rem)"><span class="fin"><span class="ink o0">x = <span class="frac"><span>5</span><span>2</span></span></span></span></div>
+    </div>
+  </div>
+</section>
+<section class="slide worked" data-view="check-fails" data-title="The check can fail!" data-group="Page 37" data-pg="p. 37" data-audio="check-fails-0,check-fails-1,check-fails-2,check-fails-3,check-fails-4">
+  <p class="eyebrow">Page 37 · ★ The check can fail!</p>
+  <p class="prob m"><span class="frac"><span>2x</span><span>x − 3</span></span> − <span class="frac"><span>6</span><span>x − 3</span></span> = 1</p>
+  <div class="rwork">
+    <div class="hw eqline" data-s="1"><span class="ink o0">x ≠ 3</span><span class="opn">restriction</span></div><div class="hw eqline" data-s="2"><span class="ink o0">2x − 6 = x − 3</span><span class="opn">× every term by (x − 3)</span></div><div class="hw eqline" data-s="2"><span class="ink o0">x = 3</span><span class="opn">− x, + 6</span></div>
+  </div>
+  <p class="fill-line">Solves to x = 3. But x ≠ <span class="blank" style="min-width:2em"><span class="fill" data-s="3">3</span></span>, so it has <span class="blank" style="min-width:7.5em"><span class="fill" data-s="4">no solution</span></span>.</p>
+  <div class="hw" data-s="4" style="font-size:clamp(1.4rem,3.4vw,1.75rem)"><span class="fin"><span class="ink o0">no solution</span></span></div>
+</section>
+<section class="slide" data-view="wrap-up" data-title="Wrap-up" data-group="Wrap-up" data-pg="Done" data-audio="wrap-up-0">
+  <p class="eyebrow">Wrap-up</p>
+  <h2>Variables in the denominator</h2>
+  <ol class="list">
+    <li><b>Restrict first:</b> set each denominator ≠ 0.</li>
+    <li><b>Same denominator?</b> That denominator is the LCD.</li>
+    <li><b>Multiply every term</b> on both sides by the LCD.</li>
+    <li><b>Solve</b> like a 1.1 equation.</li>
+    <li><b>Check.</b> An answer that breaks a restriction is extraneous. If it was the only answer, there is <b>no solution</b>. <span class="fin" style="font-size:.85em">done</span></li>
+  </ol>
+</section>
+<section class="slide" data-view="practice" data-title="How practice works" data-group="Practice · optional" data-pg="Practice" data-audio="practice-0">
+  <span class="opt">Optional</span>
+  <h2>Practice on your own</h2>
+  <p class="lead">Four Level 2 and Level 3 problems. For each one:</p>
+  <ol class="list">
+    <li>Work it in your notebook with the routine.</li>
+    <li>Stuck? <b>Hint 1</b> gives the restriction and the LCD. <b>Hint 2</b> shows the equation without fractions.</li>
+    <li>Pick your answer to check it. Wrong answers tell you what to fix.</li>
+  </ol>
+</section>
+<section class="slide practice" data-view="practice-1" data-title="Practice 1" data-group="Practice · optional" data-pg="Practice 1" data-audio="" data-okmsg="That checks out. Nice work!">
+  <p class="eyebrow">Practice 1 of 4 <span class="opt">Optional</span></p>
+  <p class="prob m">Solve: <span class="frac"><span>2x</span><span>x − 4</span></span> = 3</p>
+  <div class="choices">
+    <button class="choice m" data-why="Multiply every term: 3(x − 4) is 3x − 12, not 3x − 4. (And 4 is the restriction!)">x = 4</button>
+    <button class="choice m" data-ok="1">x = 12</button>
+    <button class="choice m" data-why="Check your signs: 2x = 3x − 12, so 12 = x.">x = −12</button>
+    <button class="choice m" data-why="Check it: 12 ÷ 2 = 6, not 3.">x = 6</button>
+  </div>
+  <div class="fb" aria-live="polite"></div>
+  <div class="helpers"><button data-r="h1">Hint 1</button><button data-r="h2">Hint 2</button><button data-r="sol">Full solution</button></div>
+  <div class="reveal" data-p="h1" hidden><span class="lab">Hint 1 · Where to start</span><p class="why">x ≠ <b>4</b>. The LCD is <b>x − 4</b>.</p></div>
+  <div class="reveal" data-p="h2" hidden><span class="lab">Hint 2 · Next step</span><p class="why">× every term by (x − 4): <b>2x = 3x − 12</b>.</p></div>
+  <div class="reveal" data-p="sol" hidden><span class="lab">Solution</span><div class="answer"><span class="fin"><span class="ink o0">x = 12</span></span></div></div>
+</section>
+<section class="slide practice" data-view="practice-2" data-title="Practice 2" data-group="Practice · optional" data-pg="Practice 2" data-audio="" data-okmsg="That checks out. Nice work!">
+  <p class="eyebrow">Practice 2 of 4 <span class="opt">Optional</span></p>
+  <p class="prob m">Solve: <span class="frac"><span>6</span><span>x + 3</span></span> = 2</p>
+  <div class="choices">
+    <button class="choice m" data-why="Multiply every term: 2(x + 3) is 2x + 6, not 2x + 3.">x = <span class="frac"><span>3</span><span>2</span></span></button>
+    <button class="choice m" data-why="−3 is the restriction: it makes the denominator 0.">x = −3</button>
+    <button class="choice m" data-ok="1">x = 0</button>
+    <button class="choice m" data-why="Check it: 6 ÷ 9 is ⅔, not 2.">x = 6</button>
+  </div>
+  <div class="fb" aria-live="polite"></div>
+  <div class="helpers"><button data-r="h1">Hint 1</button><button data-r="h2">Hint 2</button><button data-r="sol">Full solution</button></div>
+  <div class="reveal" data-p="h1" hidden><span class="lab">Hint 1 · Where to start</span><p class="why">x ≠ <b>−3</b>. The LCD is <b>x + 3</b>.</p></div>
+  <div class="reveal" data-p="h2" hidden><span class="lab">Hint 2 · Next step</span><p class="why">× every term by (x + 3): <b>6 = 2x + 6</b>.</p></div>
+  <div class="reveal" data-p="sol" hidden><span class="lab">Solution</span><div class="answer"><span class="fin"><span class="ink o0">x = 0</span></span></div></div>
+</section>
+<section class="slide practice" data-view="practice-3" data-title="Practice 3" data-group="Practice · optional" data-pg="Practice 3" data-audio="" data-okmsg="That checks out. Nice work!">
+  <p class="eyebrow">Practice 3 of 4 <span class="opt">Optional</span></p>
+  <p class="prob m">Solve: <span class="frac"><span>7</span><span>x − 5</span></span> + <span class="frac"><span>3</span><span>x − 5</span></span> = 2</p>
+  <div class="choices">
+    <button class="choice m" data-ok="1">x = 10</button>
+    <button class="choice m" data-why="Multiply every term: 2(x − 5) is 2x − 10, not 2x − 5.">x = <span class="frac"><span>15</span><span>2</span></span></button>
+    <button class="choice m" data-why="5 is the restriction: it makes the denominator 0.">x = 5</button>
+    <button class="choice m" data-why="Check it: 7/(−5) + 3/(−5) = −2, not 2.">x = 0</button>
+  </div>
+  <div class="fb" aria-live="polite"></div>
+  <div class="helpers"><button data-r="h1">Hint 1</button><button data-r="h2">Hint 2</button><button data-r="sol">Full solution</button></div>
+  <div class="reveal" data-p="h1" hidden><span class="lab">Hint 1 · Where to start</span><p class="why">x ≠ <b>5</b>. Same denominator, so the LCD is <b>x − 5</b>.</p></div>
+  <div class="reveal" data-p="h2" hidden><span class="lab">Hint 2 · Next step</span><p class="why">× every term by (x − 5): <b>7 + 3 = 2x − 10</b>.</p></div>
+  <div class="reveal" data-p="sol" hidden><span class="lab">Solution</span><div class="answer"><span class="fin"><span class="ink o0">x = 10</span></span></div></div>
+</section>
+<section class="slide practice" data-view="practice-4" data-title="Practice 4" data-group="Practice · optional" data-pg="Practice 4" data-audio="" data-okmsg="That checks out. Nice work!">
+  <p class="eyebrow">Practice 4 of 4 <span class="opt">Optional</span></p>
+  <p class="prob m">Solve: <span class="frac"><span>x</span><span>x − 2</span></span> − <span class="frac"><span>2</span><span>x − 2</span></span> = 3</p>
+  <div class="choices">
+    <button class="choice m" data-why="It solves to x = 2, but x ≠ 2. That answer is extraneous.">x = 2</button>
+    <button class="choice m" data-why="Multiply every term: 3(x − 2) is 3x − 6, not 3x − 2.">x = 0</button>
+    <button class="choice m" data-ok="1">No solution</button>
+    <button class="choice m" data-why="Check your signs: x − 2 = 3x − 6 gives 4 = 2x.">x = −2</button>
+  </div>
+  <div class="fb" aria-live="polite"></div>
+  <div class="helpers"><button data-r="h1">Hint 1</button><button data-r="h2">Hint 2</button><button data-r="sol">Full solution</button></div>
+  <div class="reveal" data-p="h1" hidden><span class="lab">Hint 1 · Where to start</span><p class="why">x ≠ <b>2</b>. Same denominator, so the LCD is <b>x − 2</b>.</p></div>
+  <div class="reveal" data-p="h2" hidden><span class="lab">Hint 2 · Next step</span><p class="why">× every term by (x − 2): <b>x − 2 = 3x − 6</b>, so x = 2. Now check the restriction.</p></div>
+  <div class="reveal" data-p="sol" hidden><span class="lab">Solution</span><div class="answer"><span class="fin"><span class="ink o0">no solution</span></span></div></div>
+</section>
+</div>
+</main>
+<button class="bigplay" id="bigPlay" type="button" aria-label="Play" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+</div>
+</div>
+
+<footer>
+  <div class="endcard" id="endCard" role="status" hidden></div>
+  <div class="capwrap" id="caption"><div class="caption"><span class="cc" aria-hidden="true">CC</span><div class="ctext" id="ctext" aria-live="polite"></div></div></div>
+  <div class="scrub" id="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0"><div class="track"><div class="fill" id="fill"></div></div><div class="knob" id="knob"></div><div class="tip" id="tip" hidden></div></div>
+  <div class="ctrl">
+    <button class="ib" id="prevPart" type="button" aria-label="Previous part" title="Previous part"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2.5v14H6zM20 5v14L9.5 12z"/></svg></button>
+    <button class="ib main" id="playBtn" type="button" aria-label="Play" title="Play (space)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="ib" id="nextPart" type="button" aria-label="Next part" title="Next part"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 5H18v14h-2.5zM4 5v14l10.5-7z"/></svg></button>
+    <span class="time" id="time">0:00<span class="tot"> / 0:00</span></span>
+    <span class="part" id="partLabel"></span>
+    <button class="pill" id="showAll" type="button" aria-pressed="false" title="Keep every step written out while the audio plays"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"/></svg>Show all<span class="wide">&nbsp;steps</span></button>
+    <button class="ib" id="ccBtn" type="button" aria-pressed="true" aria-label="Captions" title="Captions"><span class="cc">CC</span></button>
+    <button class="ib" id="setBtn" type="button" aria-expanded="false" aria-controls="viewPop" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </div>
+</footer>
+</div>
+
+<div class="lpop" id="lessonsPop" role="menu" aria-label="All lessons" hidden></div>
+<div class="pop" id="viewPop" role="dialog" aria-label="Settings" hidden>
+  <fieldset><legend>Caption size</legend><div class="seg">
+    <label><input type="radio" name="capsize" value="m">Normal</label>
+    <label><input type="radio" name="capsize" value="l">Large</label>
+    <label><input type="radio" name="capsize" value="xl">X-Large</label></div></fieldset>
+  <label class="chk"><input type="checkbox" id="full">Keep "Show all steps" on for every part</label>
+</div>
+<div class="overlay" id="keyOverlay" hidden>
+  <div class="box" role="dialog" aria-label="Notes key">
+    <div style="display:flex;align-items:center;gap:10px"><h2 style="font-size:1.4rem;flex:1">How to read these notes</h2><button class="tbtn" id="keyClose" type="button">Close</button></div>
+    <div class="legend">
+    <div class="lg"><div class="sw m">x + 3</div><p><b>Plain print</b>Already printed on your notes page. Nothing to copy.</p></div>
+    <div class="lg"><div class="sw"><span class="hw">x = 4</span></div><p><b>Handwriting</b>You write this in your notebook.</p></div>
+    <div class="lg"><div class="sw"><span class="opn">× every term by 3</span></div><p><b>Blue note</b>What we did to both sides.</p></div>
+    <div class="lg"><div class="sw"><span class="ink o0" style="background:var(--ringbg);box-shadow:0 0 0 2px var(--ring)">newest</span></div><p><b>Yellow outline</b>The step happening right now.</p></div>
+    <div class="lg"><div class="sw hw" style="padding:0"><span class="fin" style="font-size:1rem">answer</span></div><p><b>Box with a check</b>Your final answer.</p></div>
+  </div>
+  </div>
+</div>
+
+<script type="application/json" id="scripts">{"welcome-0": "Welcome back! Today we take the five-step routine to Levels two and three, where the variable moves into the denominator. Open your notebook to pages thirty-six and thirty-seven.", "level-2-0": "Page thirty-six. Level two: variables in the denominator.", "level-2-1": "Here's the key idea. A denominator can never equal zero, so find the restrictions before you solve.", "level-2-2": "Try it. One over two x minus four. Set the denominator not equal to zero: two x minus four is not equal to zero.", "level-2-3": "Add four to both sides and divide by two. x can't be two.", "l2-example-1-0": "Example one. Three x over x plus two equals six.", "l2-example-1-1": "Step one, restrictions. Set the denominator not equal to zero. x plus two can't be zero, so x can't be negative two.", "l2-example-1-2": "Step two. There's only one denominator, so the LCD is x plus two.", "l2-example-1-3": "Step three. Multiply every term by x plus two.", "l2-example-1-4": "On the left, the x plus twos cancel and leave three x. On the right, six times x plus two is six x plus twelve.", "l2-example-1-5": "Step four, solve. Subtract six x from both sides. Negative three x equals twelve.", "l2-example-1-6": "Divide by negative three. x equals negative four.", "l2-example-1-7": "Step five, check. Three times negative four is negative twelve. Negative four plus two is negative two. Negative twelve over negative two is six, so it checks. And negative four isn't the restriction.", "l2-example-1-8": "So x equals negative four.", "l2-example-2-0": "Example two is your turn. Four x over two x minus one equals five. Pause the video and try it, then press play to check your work.", "l2-example-2-1": "Restrictions. Two x minus one can't be zero. Add one and divide by two, so x can't be one half.", "l2-example-2-2": "The only denominator is two x minus one, so that's the LCD.", "l2-example-2-3": "Multiply every term by two x minus one.", "l2-example-2-4": "The left side leaves four x. The right side is five times two x minus one, which is ten x minus five.", "l2-example-2-5": "Solve. Subtract ten x from both sides. Negative six x equals negative five.", "l2-example-2-6": "Divide by negative six. x equals five sixths.", "l2-example-2-7": "Check. Four times five sixths is ten thirds. Two times five sixths, minus one, is two thirds. Ten thirds divided by two thirds is five. It checks, and five sixths isn't the restriction.", "l2-example-2-8": "So x equals five sixths. A fraction answer is fine.", "level-3-0": "Page thirty-seven. Level three: same denominator.", "level-3-1": "Here's the key idea. When fractions share a denominator, the LCD is that denominator. Multiply every term by it.", "l3-example-1-0": "Example one. Three over x plus one, plus four over x plus one, equals eight.", "l3-example-1-1": "Restrictions. x plus one can't be zero, so x can't be negative one.", "l3-example-1-2": "Both fractions share the denominator x plus one, so that's the LCD.", "l3-example-1-3": "Multiply every term by x plus one. That's both fractions and the eight.", "l3-example-1-4": "The fractions clear and leave three plus four. On the right, eight times x plus one is eight x plus eight.", "l3-example-1-5": "Solve. Three plus four is seven, so seven equals eight x plus eight.", "l3-example-1-6": "Subtract eight from both sides. Negative one equals eight x.", "l3-example-1-7": "Divide by eight. x equals negative one eighth.", "l3-example-1-8": "Check. Negative one eighth plus one is seven eighths. Three divided by seven eighths is twenty-four sevenths, and four divided by seven eighths is thirty-two sevenths. Together that's fifty-six sevenths, which is eight. It checks.", "l3-example-1-9": "So x equals negative one eighth.", "l3-example-2-0": "Example two is your turn. Five over x minus two, minus two over x minus two, equals six. Pause the video and try it, then press play to check your work.", "l3-example-2-1": "Restrictions. x minus two can't be zero, so x can't be two.", "l3-example-2-2": "The fractions share x minus two, so that's the LCD.", "l3-example-2-3": "Multiply every term by x minus two.", "l3-example-2-4": "The fractions clear and leave five minus two. On the right, six times x minus two is six x minus twelve.", "l3-example-2-5": "Five minus two is three, so three equals six x minus twelve.", "l3-example-2-6": "Add twelve to both sides. Fifteen equals six x.", "l3-example-2-7": "Divide by six. Fifteen sixths simplifies to five halves.", "l3-example-2-8": "Check. Five halves minus two is one half. Five divided by one half is ten, and two divided by one half is four. Ten minus four is six. It checks.", "l3-example-2-9": "So x equals five halves.", "check-fails-0": "Last thing on page thirty-seven. The check can fail!", "check-fails-1": "Two x over x minus three, minus six over x minus three, equals one. The restriction is x can't be three.", "check-fails-2": "Multiply every term by x minus three. Two x minus six equals x minus three. Subtract x and add six, and x equals three.", "check-fails-3": "But x can't be three. Three makes the denominator zero.", "check-fails-4": "So this equation has no solution. Three is called an extraneous solution. That's why we always check.", "wrap-up-0": "Nice work! Remember: when there's a variable in the denominator, find the restrictions first. If the fractions share a denominator, that's your LCD. And always check. If your answer breaks a restriction, the equation has no solution.", "practice-0": "That's the end of the notes! The next four problems are optional practice. Use the hints if you get stuck, then pick your answer to check it."}</script>
+<script type="application/json" id="durs">{}</script>
+<script type="application/json" id="audio">{}</script>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const SCRIPTS = JSON.parse($('#scripts').textContent), AUDIO = JSON.parse($('#audio').textContent), DUR = JSON.parse($('#durs').textContent);
+  const slides = [...document.querySelectorAll('.slide')], page = $('#page'), app = $('.app');
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  const ICON = {play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+                pause:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'};
+  const fmt = t => { t=Math.max(0,Math.round(t)); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0') };
+
+  // italicize variables in printed math
+  document.querySelectorAll('.m').forEach(el=>{ if(el.closest('.ink')) return;
+    const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), nodes=[]; while(w.nextNode()) nodes.push(w.currentNode);
+    nodes.forEach(n=>{ if(!/[xy]/.test(n.nodeValue)) return; const f=document.createDocumentFragment();
+      n.nodeValue.split(/((?<![A-Za-z])[xy](?![A-Za-z]))/).forEach(p=>{ if(p==='x'||p==='y'){const it=document.createElement('i');it.textContent=p;f.appendChild(it)} else if(p) f.appendChild(document.createTextNode(p)) });
+      n.parentNode.replaceChild(f,n) }) });
+
+  // ---------- state ----------
+  let i = 0, mode = store.get('nb-mode') || 'video';
+  const GAP = 0.9; let gapTimer = 0;
+  let clips = [], starts = [], total = 0, k = 0, playing = false, done = false, everPlayed = false;
+  const clipsOf = n => slides[n].classList.contains('practice') ? [] : (slides[n].dataset.audio||'').split(',').filter(Boolean);
+  const durOf = id => DUR[id] || Math.max(2.5, (SCRIPTS[id]||'').split(/\s+/).length/2.6 + 0.6);
+  const hasVideo = n => !!(slides[n] && clipsOf(n).length);
+
+  // one clock for the current clip: the recording if there is one, otherwise a timer
+  const audio = new Audio();
+  let fakeT = 0, fakeLast = 0, fakeOn = false;
+  const real = () => !!AUDIO[clips[k]];
+  const clipT = () => real() ? audio.currentTime : fakeT;
+  const now = () => clips.length ? Math.min(total, starts[k] + Math.min(clipT(), durOf(clips[k]))) : 0;
+
+  // ---------- drawing the page at a moment in time ----------
+  function paint(fresh){
+    const s = slides[i], id = clips[k], t = clipT();
+    const atEnd = done || !clips.length, reveal = atEnd || allOn;
+    s.querySelectorAll('[data-s]').forEach(e=>{ const n=+e.dataset.s;
+      e.classList.toggle('on', reveal || n<=k);
+      e.classList.toggle('now', !atEnd && n===k && (k>0 || allOn));
+      e.classList.toggle('past', !reveal && k>0 && n<k);
+      if(fresh && n===k && !reveal){ e.classList.remove('write'); void e.offsetWidth; e.classList.add('write') } });
+    s.querySelectorAll('[data-cue]').forEach(e=>{ const [c,ct]=e.dataset.cue.split('@');
+      const wait = !reveal && c===id && t < +ct;
+      if(e.classList.contains('cuewait') && !wait && fresh!==false && !allOn){ e.classList.remove('write'); void e.offsetWidth; e.classList.add('write') }
+      e.classList.toggle('cuewait', wait) });
+    s.querySelectorAll('[data-hl]').forEach(e=>e.classList.toggle('hl', reveal || +e.dataset.hl<=k));
+    s.querySelectorAll('[data-glow]').forEach(e=>e.classList.toggle('glow', !atEnd && e.dataset.glow.split(' ').includes(String(k))));
+  }
+
+  // ---------- captions ----------
+  let capCum=[], capTotal=0, capId=null;
+  function setCaption(id){
+    if(id===capId) return; capId=id;
+    const text = id ? (SCRIPTS[id]||'') : '';
+    const parts = text ? (text.match(/[^.!?]+[.!?]+["')]*\s*|[^.!?]+$/g) || [text]) : [];
+    capCum=[]; capTotal=0; parts.forEach(p=>{ capTotal+=p.length; capCum.push(capTotal) });
+    const el=$('#ctext'); el.innerHTML=''; el.scrollTop=0;
+    parts.forEach(p=>{ const sp=document.createElement('span'); sp.className='sen'; sp.textContent=p; el.appendChild(sp) });
+  }
+  function markCaption(f){
+    const n = f<0 ? -1 : capCum.findIndex(c=>c>=f*capTotal), el=$('#ctext');
+    [...el.children].forEach((sp,j)=>{ sp.classList.toggle('cur',j===n); sp.classList.toggle('said',n>=0&&j<n) });
+    const cur=el.children[n]; if(cur && el.scrollHeight>el.clientHeight) el.scrollTop=Math.max(0,cur.offsetTop-6);
+  }
+
+  // ---------- bar ----------
+  function drawBar(){
+    const t = done ? total : now(), f = total ? t/total : 0;
+    $('#fill').style.width = (f*100)+'%'; $('#knob').style.left = (f*100)+'%';
+    $('#scrub').setAttribute('aria-valuemax', Math.round(total)); $('#scrub').setAttribute('aria-valuenow', Math.round(t));
+    $('#scrub').setAttribute('aria-valuetext', fmt(t)+' of '+fmt(total));
+    $('#time').innerHTML = fmt(t)+'<span class="tot"> / '+fmt(total)+'</span>';
+    if(clips.length && !done && (playing || now()>0.05)) markCaption(Math.min(1, clipT()/durOf(clips[k])));
+  }
+  function setPlayIcon(){ const b=$('#playBtn'); b.innerHTML = playing ? ICON.pause : ICON.play;
+    b.setAttribute('aria-label', playing ? 'Pause' : (done ? 'Watch again' : 'Play'));
+    $('#bigPlay').hidden = !(clips.length && !playing && !done && now()<0.05 && !everPlayed) }
+  let raf=0;
+  function loop(){ cancelAnimationFrame(raf); if(!playing) return;
+    if(!real() && fakeOn){ const n=performance.now(); fakeT += (n-fakeLast)/1000; fakeLast=n;
+      if(fakeT >= durOf(clips[k])){ fakeT=durOf(clips[k]); fakeOn=false; clipEnded(); return } }
+    paint(); drawBar(); raf=requestAnimationFrame(loop) }
+
+  // ---------- playback ----------
+  function load(n, at){ k=n; capId=null; setCaption(clips[k]); fakeT=at||0;
+    if(real()){ if(audio.dataset.id!==clips[k]){ audio.src=AUDIO[clips[k]]; audio.dataset.id=clips[k] } try{ audio.currentTime=at||0 }catch(e){} } }
+  function play(){
+    if(!clips.length) return;
+    if(done){ done=false; load(0,0); paint(true) }
+    hideCard(); playing=true; everPlayed=true;
+    if(real() && audio.ended && k<clips.length-1){ setPlayIcon(); clipEnded(); return }   // paused in the gap between lines
+    if(real()){ audio.play().then(()=>{ setPlayIcon(); loop() }).catch(()=>{ playing=false; setPlayIcon() }) }
+    else { fakeOn=true; fakeLast=performance.now(); loop() }
+    setPlayIcon();
+  }
+  function pause(){ clearTimeout(gapTimer); playing=false; fakeOn=false; audio.pause(); cancelAnimationFrame(raf); setPlayIcon() }
+  function clipEnded(){
+    if(k < clips.length-1){
+      // a short breath between lines on the same slide
+      clearTimeout(gapTimer); cancelAnimationFrame(raf);
+      gapTimer = setTimeout(()=>{ if(!playing) return; load(k+1,0); paint(true);
+        if(real()) audio.play().catch(()=>{}); else { fakeOn=true; fakeLast=performance.now() } loop() }, GAP*1000) }
+    else partEnded();
+  }
+  audio.addEventListener('ended', ()=>{ if(playing) clipEnded() });
+  function partEnded(){
+    playing=false; fakeOn=false; done=true; cancelAnimationFrame(raf);
+    paint(); drawBar(); markCaption(-1); setPlayIcon();
+    const nx=i+1;
+    if(nx>=slides.length){ card('That\'s the end of the lesson.', '', [['replay','Watch again',()=>{ play() }]]); return }
+    const nt=slides[nx].dataset.title;
+    if(mode==='video' && hasVideo(nx) && !slides[nx].classList.contains('practice')) upNext(nx);
+    else card(hasVideo(nx) && !slides[nx].classList.contains('practice') ? 'Done with this part.' : 'That\'s the end of the notes.', 'Next: '+nt,
+      [['replay','Watch again',()=>{ play() }], ['go','Next part ▶',()=>goTo(nx,true)]]);
+  }
+  function seek(t, keepPlaying){
+    if(!clips.length) return;
+    t=Math.max(0,Math.min(total-0.01,t)); hideCard();
+    let n=0; while(n<clips.length-1 && starts[n+1]<=t) n++;
+    const wasDone=done; done=false;
+    if(n!==k || wasDone) load(n, t-starts[n]); else { fakeT=t-starts[n]; if(real()) try{ audio.currentTime=t-starts[n] }catch(e){} }
+    paint(false); drawBar(); setPlayIcon();
+    if(keepPlaying) play();
+  }
+
+  // ---------- end card ----------
+  let cardTimer=null;
+  function hideCard(){ clearInterval(cardTimer); $('#endCard').hidden=true }
+  function card(msg, sub, btns){
+    hideCard(); const c=$('#endCard'); c.innerHTML='';
+    const p=document.createElement('p'); p.textContent=msg; if(sub){ const s=document.createElement('small'); s.textContent=sub; p.appendChild(s) } c.appendChild(p);
+    btns.forEach(([cls,label,fn])=>{ const b=document.createElement('button'); b.type='button'; b.className='pill'+(cls==='go'?' go':''); b.textContent=(cls==='replay'?'↺ ':'')+label; b.onclick=fn; c.appendChild(b) });
+    c.hidden=false; const last=c.querySelector('.go')||c.querySelector('button'); if(last) last.focus({preventScroll:true});
+  }
+  function upNext(nx){
+    let n=4; const nt=slides[nx].dataset.title;
+    card('Up next: '+nt, 'Starting in '+n+'…', [['replay','Stay here',()=>{ hideCard() }], ['go','Play now ▶',()=>goTo(nx,true)]]);
+    const sm=$('#endCard small');
+    cardTimer=setInterval(()=>{ n--; if(n<=0){ clearInterval(cardTimer); goTo(nx,true) } else sm.textContent='Starting in '+n+'…' },1000);
+  }
+
+  // ---------- moving between parts ----------
+  function goTo(n, autoplay){
+    pause(); hideCard(); i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,j)=>s.classList.toggle('cur',j===i));
+    clips=clipsOf(i); starts=[]; total=0; clips.forEach((id,j)=>{ starts.push(total); total+=durOf(id) + (j<clips.length-1 ? GAP : 0) });
+    audio.removeAttribute('src'); delete audio.dataset.id;
+    done = !clips.length;
+    load(done && clips.length ? clips.length-1 : 0, 0);
+    $('#main').scrollTop=0; page.dataset.pg = slides[i].dataset.pg||'';
+    paint(false); fit();
+    const novid = !clips.length;
+    ['#scrub','#playBtn','#time','#showAll','#ccBtn'].forEach(sel=>{ $(sel).style.visibility = novid ? 'hidden' : '' });
+    app.classList.toggle('novid', novid);
+    $('#caption').style.display = (novid || !ccOn) ? 'none' : '';
+    $('#prevPart').disabled = i===0; $('#nextPart').disabled = i===slides.length-1;
+    const pl=$('#partLabel'); pl.textContent=slides[i].dataset.title; const sm=document.createElement('small'); sm.textContent=(i+1)+' of '+slides.length; pl.appendChild(sm);
+    drawTicks(); drawBar(); if(done) markCaption(-1); setPlayIcon();
+    menuItems.forEach((b,j)=>b.setAttribute('aria-current', j===i));
+    try{ parent!==window && parent.postMessage({type:'lesson-view',view:slides[i].dataset.view},'*') }catch(e){}
+    if(autoplay && clips.length) play();
+  }
+  function drawTicks(){ const sc=$('#scrub'); sc.querySelectorAll('.tick').forEach(e=>e.remove());
+    starts.slice(1).forEach(s0=>{ const t=document.createElement('i'); t.className='tick'; t.style.left=(s0/total*100)+'%'; sc.querySelector('.track').appendChild(t) }) }
+
+  // ---------- fit the page to the screen ----------
+  function fit(){ const m=$('#main'); page.style.zoom=1; if(m.clientWidth<700) return;
+    const cs=getComputedStyle(m), avail=m.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom), need=page.offsetHeight;
+    if(need>avail) page.style.zoom=Math.max(0.6, Math.floor(avail/need*97)/100) }
+  window.addEventListener('resize', ()=>fit());
+  try{ document.fonts && document.fonts.ready.then(()=>fit()) }catch(e){}
+
+  // ---------- controls ----------
+  $('#playBtn').onclick = ()=> playing ? pause() : play();
+  $('#bigPlay').onclick = ()=> play();
+  $('#prevPart').onclick = ()=> { if(clips.length && now()>3 && !done) seek(0, playing); else goTo(i-1, mode==='video') };
+  $('#nextPart').onclick = ()=> goTo(i+1, mode==='video');
+  // Show all steps: everything stays written out; the audio keeps going and the step being talked about is outlined
+  let allOn = store.get('nb-full')==='1';
+  function setAll(v){ allOn=v; $('#showAll').setAttribute('aria-pressed', v); paint(false) }
+  $('#showAll').onclick = ()=> setAll(!allOn);
+  // scrubbing
+  const sc=$('#scrub'), tip=$('#tip');
+  const tAt = e => { const r=sc.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*total };
+  let dragging=false, resume=false;
+  sc.addEventListener('pointerdown', e=>{ if(!total) return; dragging=true; resume=playing; pause(); sc.classList.add('drag'); sc.setPointerCapture(e.pointerId); seek(tAt(e), false) });
+  sc.addEventListener('pointermove', e=>{ if(!total) return; const t=tAt(e);
+    tip.hidden=false; tip.style.left=(t/total*100)+'%'; let n=0; while(n<clips.length-1 && starts[n+1]<=t) n++; tip.textContent=fmt(t)+(clips.length>1?' · step '+n:'');
+    if(dragging) seek(t, false) });
+  sc.addEventListener('pointerleave', ()=>{ if(!dragging) tip.hidden=true });
+  sc.addEventListener('pointerup', e=>{ if(!dragging) return; dragging=false; sc.classList.remove('drag'); tip.hidden=true; if(resume) play() });
+  sc.addEventListener('keydown', e=>{ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopPropagation(); seek(now()+(e.key==='ArrowRight'?5:-5), playing) } });
+  document.addEventListener('keydown', e=>{
+    if(!$('#keyOverlay').hidden){ if(e.key==='Escape') $('#keyOverlay').hidden=true; return }
+    if(!$('#lessonsPop').hidden) return;
+    if(!$('#viewPop').hidden){ if(e.key==='Escape'){ togglePop(false); $('#setBtn').focus() } return }
+    if(e.target.closest('button,input,[role=slider]')) return;
+    if(e.key===' '||e.key==='k'){ e.preventDefault(); playing ? pause() : play() }
+    if(e.key==='ArrowRight'){ e.preventDefault(); seek(now()+5, playing) }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); seek(now()-5, playing) } });
+
+  // captions on/off + settings
+  let ccOn = store.get('nb-cc')!=='0';
+  function paintCC(){ $('#ccBtn').setAttribute('aria-pressed', ccOn); $('#caption').style.display = (ccOn && clips.length) ? '' : 'none'; requestAnimationFrame(fit) }
+  $('#ccBtn').onclick = ()=> { ccOn=!ccOn; store.set('nb-cc', ccOn?'1':'0'); paintCC() };
+  function togglePop(open){ $('#viewPop').hidden=!open; $('#setBtn').setAttribute('aria-expanded',open) }
+  $('#setBtn').onclick = e => { e.stopPropagation(); togglePop($('#viewPop').hidden) };
+  document.addEventListener('click', e=>{ if(!$('#viewPop').hidden && !e.target.closest('#viewPop') && !e.target.closest('#setBtn')) togglePop(false) });
+  const size = store.get('nb-capsize') || 'm';
+  (document.querySelector('input[name=capsize][value="'+size+'"]')||document.querySelector('input[name=capsize]')).checked = true;
+  $('#full').checked = store.get('nb-full')==='1';
+  function applyView(){ const v=(document.querySelector('input[name=capsize]:checked')||{}).value||'m';
+    app.classList.toggle('cap-l', v==='l'); app.classList.toggle('cap-xl', v==='xl');
+    store.set('nb-capsize', v); store.set('nb-full', $('#full').checked?'1':'0'); requestAnimationFrame(fit) }
+  $('#viewPop').addEventListener('change', e=>{ applyView(); if(e.target.id==='full') setAll(e.target.checked) });
+  applyView();
+
+  // Video / Slides
+  function setMode(m){ mode=m; store.set('nb-mode', m);
+    $('#modeVideo').setAttribute('aria-pressed', m==='video'); $('#modeSlides').setAttribute('aria-pressed', m==='slides');
+    if(m==='slides' && cardTimer){ partEnded() } }
+  $('#modeVideo').onclick = ()=> { setMode('video'); if(done && hasVideo(i+1)) goTo(i+1, true) };
+  $('#modeSlides').onclick = ()=> setMode('slides');
+  $('#modeVideo').title='Plays straight through, part after part'; $('#modeSlides').title='Stops after each part so you can watch again or move on';
+
+  // menu (closed unless they open it)
+  const menu=$('#menu'), menuItems=[]; let grp=null;
+  slides.forEach((s,n)=>{
+    if(s.dataset.group!==grp){ grp=s.dataset.group; const g=document.createElement('h3'); g.textContent=grp; menu.appendChild(g) }
+    const b=document.createElement('button'); b.type='button'; b.className='mi';
+    b.innerHTML='<span class="no"><span></span></span><span class="tt"></span>';
+    b.querySelector('.no span').textContent=n+1; b.querySelector('.tt').textContent=s.dataset.title;
+    b.onclick=()=>{ setMenu(false); goTo(n, hasVideo(n)) };
+    menu.appendChild(b); menuItems.push(b) });
+  function setMenu(open){ app.classList.toggle('mclosed',!open); $('#menuBtn').setAttribute('aria-expanded',open) }
+  $('#menuBtn').onclick = ()=> setMenu(app.classList.contains('mclosed'));
+  $('#scrim').onclick = ()=> setMenu(false);
+
+  // All lessons (only when the hub tells us what lessons exist)
+  const LIST = Array.isArray(window.LESSON_LIST) ? window.LESSON_LIST : [];
+  if(LIST.length > 1){
+    const btn=$('#lessonsBtn'), pop=$('#lessonsPop'); btn.hidden=false; app.classList.add('haslessons');
+    let g=null;
+    LIST.forEach(l=>{
+      if(l.group!==g){ g=l.group; const h=document.createElement('h3'); h.textContent=g||'Lessons'; pop.appendChild(h) }
+      const b=document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent=l.title;
+      b.setAttribute('aria-current', l.slug===window.LESSON_CURRENT);
+      b.onclick=()=>{ if(l.slug===window.LESSON_CURRENT){ setPop(false); return } pause(); try{ parent.postMessage({type:'lesson-switch', slug:l.slug},'*') }catch(e){} };
+      pop.appendChild(b) });
+    function setPop(open){ pop.hidden=!open; btn.setAttribute('aria-expanded',open);
+      if(open){ const c=pop.querySelector('[aria-current="true"]')||pop.querySelector('button'); c && c.focus() } }
+    btn.onclick=e=>{ e.stopPropagation(); setPop(pop.hidden) };
+    document.addEventListener('click',e=>{ if(!pop.hidden && !e.target.closest('#lessonsPop') && !e.target.closest('#lessonsBtn')) setPop(false) });
+    pop.addEventListener('keydown',e=>{ const items=[...pop.querySelectorAll('button')], n=items.indexOf(document.activeElement);
+      if(e.key==='Escape'){ setPop(false); btn.focus() }
+      if(e.key==='ArrowDown'){ e.preventDefault(); (items[n+1]||items[0]).focus() }
+      if(e.key==='ArrowUp'){ e.preventDefault(); (items[n-1]||items[items.length-1]).focus() } });
+    try{ parent!==window && parent.postMessage({type:'lesson-switcher-ready'},'*') }catch(e){}
+  }
+
+  // key pop-up
+  $('#keyBtn').onclick = ()=> { pause(); $('#keyOverlay').hidden=false; $('#keyClose').focus() };
+  $('#keyClose').onclick = ()=> $('#keyOverlay').hidden=true;
+  $('#keyOverlay').onclick = e => { if(e.target.id==='keyOverlay') e.currentTarget.hidden=true };
+
+  // practice
+  document.querySelectorAll('.practice').forEach(sl=>{
+    const fb=sl.querySelector('.fb');
+    sl.querySelectorAll('.choice').forEach((b,n)=>{
+      const w=document.createElement('span'); while(b.firstChild) w.appendChild(b.firstChild); b.appendChild(w);
+      const key=document.createElement('span'); key.className='k'; key.textContent='ABCD'[n]; b.prepend(key);
+      b.onclick=()=>{ if(b.dataset.ok){ b.classList.add('right'); fb.className='fb ok'; fb.innerHTML='<span class="ic">✓ Correct</span><span></span>'; fb.lastChild.textContent=sl.dataset.okmsg||'Completely factored. Nice work!' }
+        else { b.classList.add('wrong'); fb.className='fb no'; fb.innerHTML='<span class="ic">✗ Not yet</span><span></span>'; fb.lastChild.textContent=b.dataset.why } } });
+    sl.querySelectorAll('.helpers button').forEach(h=>{ h.setAttribute('aria-expanded','false');
+      h.onclick=()=>{ const p=sl.querySelector('[data-p="'+h.dataset.r+'"]'); const open=p.hidden; p.hidden=!open; h.setAttribute('aria-expanded',open); fit() } }) });
+
+  // start: ?view= (Apps Script passes it as LESSON_VIEW), or #view
+  let want = window.LESSON_VIEW || '';
+  try{ want = want || new URLSearchParams(location.search).get('view') || location.hash.slice(1) }catch(e){}
+  want = String(want||'').toLowerCase();
+  const start = Math.max(0, slides.findIndex(s=>s.dataset.view===want));
+  $('#showAll').setAttribute('aria-pressed', allOn);
+  setMode(mode); paintCC(); goTo(start, false);
+})();
+</script>
+</body>
+</html>

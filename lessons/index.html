@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lessons · Algebra 3/4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600&display=swap">
+<style>
+  :root { --bar:#fdfbff; --ink:#271f3d; --muted:#665b80; --rule:#e5def1; --sel:#e8dffb; --accent:#6a4fc0; }
+  html, body { height:100%; margin:0; }
+  body { display:flex; flex-direction:column; background:var(--bar); color:var(--ink);
+         font-family:"Lexend", system-ui, sans-serif; }
+  /* Only for older lessons that don't have their own Menu button */
+  .switch { display:flex; align-items:center; gap:10px; padding:6px 14px; border-bottom:1px solid var(--rule); flex:none; font-size:.9rem; }
+  .switch[hidden] { display:none; }
+  .switch label { color:var(--muted); font-weight:500; }
+  .switch select { font:inherit; color:var(--ink); background:var(--sel); border:1px solid var(--rule); border-radius:999px; padding:5px 12px; max-width:100%; }
+  .switch select:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+  iframe { flex:1; width:100%; border:0; display:block; }
+  .wait { flex:1; display:grid; place-items:center; text-align:center; padding:24px; color:var(--muted); }
+  .wait[hidden] { display:none; }
+  .wait .dot { width:38px; height:38px; margin:0 auto 14px; border-radius:50%; border:4px solid var(--sel); border-top-color:var(--accent); animation:spin 1s linear infinite; }
+  .wait a { color:var(--accent); font-weight:600; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .wait .dot { animation:none; } }
+</style>
+</head>
+<body>
+  <div class="switch" id="switch" hidden>
+    <label for="lessonPick">All lessons</label>
+    <select id="lessonPick"></select>
+  </div>
+  <div class="wait" id="wait" role="status"><div><div class="dot" aria-hidden="true"></div><p id="waitMsg">Loading the lesson…</p></div></div>
+  <iframe title="Lesson" allow="autoplay; clipboard-write" hidden></iframe>
+  <script src="/vendor/firebase-app-compat.js"></script>
+  <script src="/vendor/firebase-database-compat.js"></script>
+  <script src="/firebase-config.js"></script>
+  <script>
+  (function () {
+    var BASE = '/lessons/';
+    /* Lessons added in the teacher hub live in the database (content/lessons + content/lessonFiles). */
+    var db = null;
+    try { if (window.firebase && window.NB_FIREBASE_CONFIG && !/PASTE/.test(NB_FIREBASE_CONFIG.apiKey)) { firebase.initializeApp(NB_FIREBASE_CONFIG); db = firebase.database(); } } catch (e) { db = null; }
+    function dbGet(path, fallback) {
+      if (!db) return Promise.resolve(fallback);
+      var get = db.ref(path).once('value').then(function (s) { return s.val(); }, function () { return fallback; });
+      return Promise.race([get, new Promise(function (r) { setTimeout(function () { r(fallback); }, 6000); })]);
+    }
+    var firstPage = function (l) { var n = parseInt(l.pages, 10); return isNaN(n) ? 9999 : n; };
+    function mergeLessons(base, extra) {
+      var list = (base || []).slice();
+      Object.keys(extra || {}).forEach(function (slug) {
+        var e = extra[slug] || {};
+        list = list.filter(function (l) { return l.slug !== slug; });
+        if (e.hidden || !e.title) return;
+        list.push({ slug: slug, title: e.title, group: e.group || 'More lessons', pages: e.pages || '', parts: e.parts || [], src: 'db' });
+      });
+      var unit = function (g) { var n = parseFloat(g); return isNaN(n) ? -1 : n; };
+      var groups = [];
+      list.forEach(function (l) { if (groups.indexOf(l.group) < 0) groups.push(l.group); });
+      groups.sort(function (a, b) { return unit(b) - unit(a); });
+      return list.sort(function (a, b) { return groups.indexOf(a.group) - groups.indexOf(b.group) || firstPage(a) - firstPage(b); });
+    }
+    var params = new URLSearchParams(location.search);
+    var LESSONS = [], LESSON_FILE = '', NB_CONFIG = null;
+    var frame = document.querySelector('iframe');
+    var waitEl = document.getElementById('wait'), waitMsg = document.getElementById('waitMsg');
+
+    function fail(msg) {
+      waitEl.querySelector('.dot').hidden = true;
+      waitMsg.innerHTML = msg;
+    }
+    function openLesson(slug) { location.assign(BASE + '?lesson=' + encodeURIComponent(slug)); }
+    function openPart(slug, view) {
+      location.assign(BASE + '?lesson=' + encodeURIComponent(slug) + (view ? '&view=' + encodeURIComponent(view) : ''));
+    }
+
+    window.addEventListener('message', function (e) {
+      if (e.source !== frame.contentWindow) return;
+      var d = e.data || {};
+      // Keep the address bar on the slide being viewed, so its link can be copied straight into Canvas.
+      if (d.type === 'lesson-view' && /^[a-z0-9-]+$/.test(d.view)) {
+        history.replaceState(null, '', BASE + '?lesson=' + encodeURIComponent(LESSON_FILE) + '&view=' + d.view);
+      }
+      if (d.type === 'lesson-switch' && /^[a-z0-9-]+$/.test(d.slug)) openLesson(d.slug);
+    });
+
+    function mergeSpreads(c, extra) {
+      Object.keys(extra || {}).forEach(function (id) {
+        var e = extra[id] || {};
+        c.objectives.forEach(function (o) { if (e.hidden || (e.obj && o.id !== e.obj)) o.spreads = (o.spreads || []).filter(function (x) { return x !== id; }); });
+        c.spreads = c.spreads.filter(function (s) { return s.id !== id; });
+        if (e.hidden) return;
+        c.spreads.push({ id: id, label: e.label || id });
+        c.objectives.forEach(function (o) { if (o.id === e.obj && (o.spreads || []).indexOf(id) < 0) (o.spreads = o.spreads || []).push(id); });
+      });
+      return c;
+    }
+    /* The class notebook spread that holds a lesson's first page, e.g. "/?obj=3.2&spread=72-73". */
+    function notebookLink(l) {
+      var r = pageRange(l && l.pages), cfg = NB_CONFIG;
+      if (!r || !cfg || !cfg.spreads || !cfg.objectives) return null;
+      var sp = null;
+      cfg.spreads.forEach(function (s) {
+        var m = String(s.id).match(/^(\d+)(?:-(\d+))?$/);
+        if (m && !sp && r[0] >= +m[1] && r[0] <= +(m[2] || m[1])) sp = s;
+      });
+      if (!sp) return null;
+      var obj = null;
+      cfg.objectives.forEach(function (o) { if (!obj && !o.teacherOnly && (o.spreads || []).indexOf(sp.id) >= 0) obj = o; });
+      return { href: '/?' + (obj ? 'obj=' + encodeURIComponent(obj.id) + '&' : '') + 'spread=' + encodeURIComponent(sp.id), label: sp.label || sp.id };
+    }
+
+    function pageRange(s) {
+      var m = String(s || '').match(/(\d+)(?:\s*[–-]\s*(\d+))?/);
+      return m ? [+m[1], +(m[2] || m[1])] : null;
+    }
+
+    // The "All lessons" finder: one button in the lesson's own header, a panel with search, pages and parts.
+    var frame = document.querySelector('iframe');
+    function addSwitcher() {
+      if (LESSONS.length < 2) return true;
+      var doc;
+      try { doc = frame.contentDocument; } catch (err) { return false; }
+      if (!doc || !doc.body) return false;
+      var menu = doc.getElementById('menuBtn');
+      if (!menu) return false;
+      var own = doc.getElementById('lessonsBtn'), ownPop = doc.getElementById('lessonsPop');
+      if (ownPop) { ownPop.innerHTML = ''; ownPop.hidden = true; }   // the lesson still checks it for its shortcuts
+
+      var css = doc.createElement('style');
+      css.textContent =
+        '#hubLessonsBtn svg{width:14px;height:14px}' +
+        '.hubpop{position:fixed;z-index:60;top:52px;left:12px;width:min(460px,calc(100vw - 24px));max-height:min(78vh,640px);display:flex;flex-direction:column;' +
+        'background:var(--paper,#fff);color:var(--ink,#222);border:1px solid var(--rule,#ddd);border-radius:14px;box-shadow:0 12px 34px rgba(30,20,60,.2);overflow:hidden}' +
+        '.hubpop[hidden]{display:none}' +
+        '.hubpop .hs{padding:10px 10px 8px;border-bottom:1px solid var(--rule,#ddd)}' +
+        '.hubpop input{box-sizing:border-box;width:100%;font:inherit;font-size:.95rem;padding:9px 12px;border:1.5px solid var(--rule,#ccc);border-radius:10px;background:var(--paper,#fff);color:inherit}' +
+        '.hubpop input:focus-visible{outline:3px solid var(--accent,#6a4fc0);outline-offset:1px;border-color:transparent}' +
+        '.hubpop .hl{overflow:auto;padding:4px 8px 10px}' +
+        '.hubpop h3{margin:12px 6px 4px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#666)}' +
+        '.hubpop .row{display:flex;align-items:center;gap:4px;border-radius:10px}' +
+        '.hubpop .row.cur{background:var(--sel,#e8dffb)}' +
+        '.hubpop button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:8px}' +
+        '.hubpop button:hover{background:var(--chip,#f1edf8)}' +
+        '.hubpop button:focus-visible{outline:3px solid var(--accent,#6a4fc0);outline-offset:-2px}' +
+        '.hubpop a.go{color:inherit;text-decoration:none;border-radius:8px}.hubpop a.go:hover{background:var(--chip,#f1edf8)}.hubpop a.go:focus-visible{outline:3px solid var(--accent,#6a4fc0);outline-offset:-2px}.hubpop .nbrow{margin:6px 0 2px;border-bottom:1px solid var(--rule,#ddd);border-radius:0;padding-bottom:6px}' +
+        '.hubpop .go{flex:1;display:flex;align-items:center;gap:10px;text-align:left;padding:8px 8px;font-size:.95rem;line-height:1.3;min-width:0}' +
+        '.hubpop .pg{flex:none;font-size:.75rem;font-weight:700;letter-spacing:.02em;white-space:nowrap;padding:3px 8px;border-radius:999px;background:var(--chip,#f1edf8);color:var(--ink,#222);border:1px solid var(--rule,#ddd);min-width:4.6em;text-align:center}' +
+        '.hubpop .row.cur .pg{background:var(--paper,#fff)}' +
+        '.hubpop .now{font-size:.75rem;color:var(--muted,#666);font-weight:400}' +
+        '.hubpop .tg{flex:none;width:34px;height:34px;display:grid;place-items:center}' +
+        '.hubpop .tg svg{width:16px;height:16px;transition:transform .2s}' +
+        '.hubpop .tg[aria-expanded="true"] svg{transform:rotate(180deg)}' +
+        '.hubpop .parts{margin:2px 0 6px 18px;padding-left:10px;border-left:2px solid var(--rule,#ddd)}' +
+        '.hubpop .parts[hidden]{display:none}' +
+        '.hubpop .pt{display:flex;width:100%;align-items:baseline;gap:10px;text-align:left;padding:6px 8px;font-size:.88rem}' +
+        '.hubpop .pt .pp{flex:none;min-width:4.4em;font-size:.75rem;color:var(--muted,#666);font-weight:600}' +
+        '.hubpop .none{padding:16px 10px;color:var(--muted,#666);font-size:.9rem}' +
+        '.hubpop mark{background:#fff1a8;color:inherit;border-radius:3px;padding:0 1px}' +
+        '#hubLessonsBtn .s2{display:none}' +
+        '@media (max-width:620px){#hubLessonsBtn .l{display:none}#hubLessonsBtn .s2{display:inline}}';
+      doc.head.appendChild(css);
+
+      var btn = doc.createElement('button');
+      btn.type = 'button'; btn.id = 'hubLessonsBtn'; btn.className = (own && own.className) || menu.className;
+      btn.setAttribute('aria-haspopup', 'dialog'); btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = '<span class="l">All lessons</span><span class="s2">Lessons</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+      btn.setAttribute('aria-label', 'All lessons');
+      if (own) own.replaceWith(btn); else menu.insertAdjacentElement('afterend', btn);
+
+      var pop = doc.createElement('div');
+      pop.className = 'hubpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'All lessons'); pop.hidden = true;
+      pop.innerHTML = '<div class="hs"><input type="search" placeholder="Search a page number or topic (e.g. 73, example 2)" aria-label="Search lessons by page number or topic"></div><div class="hl"></div>';
+      doc.body.appendChild(pop);
+      var input = pop.querySelector('input'), listEl = pop.querySelector('.hl');
+      var open = {}; open[LESSON_FILE] = true;
+      var chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+      function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function hi(t, q) {
+        if (!q || /^\d+$/.test(q)) return esc(t);
+        var i = t.toLowerCase().indexOf(q);
+        return i < 0 ? esc(t) : esc(t.slice(0, i)) + '<mark>' + esc(t.slice(i, i + q.length)) + '</mark>' + esc(t.slice(i + q.length));
+      }
+      var cur0 = LESSONS.filter(function (l) { return l.slug === LESSON_FILE; })[0], nb = notebookLink(cur0);
+      var nbRow = '<div class="row"><a class="go" href="/" target="_top"><span class="pg">⌂</span><span>Class hub</span></a></div>' +
+        '<div class="row nbrow"><a class="go" href="' + (nb ? esc(nb.href) : '/') + '" target="_top">' +
+        '<span class="pg">' + (nb ? 'p. ' + esc(nb.label) : '📓') + '</span><span>' + (nb ? 'Class notes for this lesson' : 'Class notebook') + '</span></a></div>';
+      function partPage(p) { return /^p\.\s*\d/.test(p.p || '') ? p.p : ''; }
+
+      function render() {
+        var q = input.value.trim().toLowerCase(), num = /^\d+$/.test(q) ? +q : null;
+        var html = '', grp = null, any = false;
+        LESSONS.forEach(function (l) {
+          var r = pageRange(l.pages), parts = l.parts || [], shownParts = parts, lessonHit = true;
+          if (q) {
+            if (num !== null) {
+              lessonHit = !!(r && num >= r[0] && num <= r[1]);
+              shownParts = parts.filter(function (p) { var pr = pageRange(partPage(p)); return pr && pr[0] === num; });
+              if (!lessonHit && !shownParts.length) return;
+              if (!shownParts.length) shownParts = parts;
+            } else {
+              var titleHit = (l.title + ' ' + l.group).toLowerCase().indexOf(q) >= 0;
+              var hits = parts.filter(function (p) { return (p.t || '').toLowerCase().indexOf(q) >= 0; });
+              if (!titleHit && !hits.length) return;
+              shownParts = hits.length ? hits : parts;
+            }
+          }
+          any = true;
+          if (l.group !== grp) { grp = l.group; html += '<h3>' + esc(grp) + '</h3>'; }
+          var cur = l.slug === LESSON_FILE, isOpen = q ? true : !!open[l.slug];
+          var pid = 'hp-' + l.slug;
+          html += '<div class="row' + (cur ? ' cur' : '') + '">' +
+            '<button class="go" data-slug="' + esc(l.slug) + '">' +
+              '<span class="pg">' + (l.pages ? 'p. ' + esc(l.pages) : '—') + '</span>' +
+              '<span>' + hi(l.title, q) + (cur ? ' <span class="now">· you are here</span>' : '') + '</span></button>' +
+            (parts.length ? '<button class="tg" data-tg="' + esc(l.slug) + '" aria-expanded="' + isOpen + '" aria-controls="' + pid + '" aria-label="Show parts of ' + esc(l.title) + '">' + chev + '</button>' : '') +
+            '</div>';
+          if (parts.length) {
+            html += '<div class="parts" id="' + pid + '"' + (isOpen ? '' : ' hidden') + '>' +
+              shownParts.map(function (p) {
+                return '<button class="pt" data-slug="' + esc(l.slug) + '" data-view="' + esc(p.v) + '">' +
+                  '<span class="pp">' + esc(partPage(p) || (/^practice/.test(p.v) ? 'Practice' : '')) + '</span><span>' + hi(p.t, q) + '</span></button>';
+              }).join('') + '</div>';
+          }
+        });
+        listEl.innerHTML = (q ? '' : nbRow) + (any ? html : '<p class="none">No lesson matches “' + esc(input.value.trim()) + '”. Try a page number like 73.</p>');
+      }
+      listEl.addEventListener('click', function (e) {
+        var t = e.target.closest('button'); if (!t) return;
+        if (t.dataset.tg) { open[t.dataset.tg] = t.getAttribute('aria-expanded') !== 'true'; render(); var b = listEl.querySelector('[data-tg="' + t.dataset.tg + '"]'); if (b) b.focus(); return; }
+        if (t.dataset.view) { openPart(t.dataset.slug, t.dataset.view); return; }
+        if (t.dataset.slug === LESSON_FILE) { setPop(false); return; }
+        openLesson(t.dataset.slug);
+      });
+      input.addEventListener('input', render);
+      render();
+
+      function setPop(o) {
+        pop.hidden = !o; btn.setAttribute('aria-expanded', String(o));
+        if (o) { input.focus(); var c = listEl.querySelector('.row.cur'); if (c && !input.value) c.scrollIntoView({ block: 'center' }); }
+      }
+      btn.addEventListener('click', function (e) { e.stopPropagation(); setPop(pop.hidden); });
+      doc.addEventListener('click', function (e) { if (!pop.hidden && !pop.contains(e.target) && !btn.contains(e.target)) setPop(false); });
+      pop.addEventListener('keydown', function (e) {
+        e.stopPropagation();   // keep the lesson's own keyboard shortcuts (space, arrows) out of the search box
+        var items = [].slice.call(pop.querySelectorAll('input, button, a')).filter(function (x) { return x.offsetParent !== null; });
+        var n = items.indexOf(doc.activeElement);
+        if (e.key === 'Escape') { setPop(false); btn.focus(); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); (items[n + 1] || items[0]).focus(); }
+        if (e.key === 'ArrowUp') { e.preventDefault(); (items[n - 1] || items[items.length - 1]).focus(); }
+      });
+      return true;
+    }
+
+    // Last resort (a lesson with no Menu button): a slim bar above it.
+    function showFallback() {
+      var sel = document.getElementById('lessonPick'), grp = null, og = null;
+      LESSONS.forEach(function (l) {
+        if (l.group !== grp) { grp = l.group; og = document.createElement('optgroup'); og.label = grp; sel.appendChild(og); }
+        var o = document.createElement('option'); o.value = l.slug; o.textContent = (l.pages ? 'p. ' + l.pages + ' · ' : '') + l.title;
+        if (l.slug === LESSON_FILE) o.selected = true;
+        og.appendChild(o);
+      });
+      sel.onchange = function () { if (sel.value !== LESSON_FILE) openLesson(sel.value); };
+      document.getElementById('switch').hidden = false;
+    }
+
+
+    /* ---------- the lessons home page (no ?lesson= in the link) ---------- */
+    function showHome(missing) {
+      // Lessons now live on the class hub (the site's front page), next to the live notes.
+      location.replace('/'); return;
+      document.title = 'Lessons · Algebra 3/4';
+      ['#switch', '#wait'].forEach(function (s) { var el = document.querySelector(s); if (el) el.hidden = true; });
+      frame.remove();
+      var fonts = document.createElement('link'); fonts.rel = 'stylesheet';
+      fonts.href = 'https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&family=Lexend:wght@400;500;600&display=swap';
+      var css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/styles.css';
+      document.head.appendChild(fonts); document.head.appendChild(css);
+      var extra = document.createElement('style');
+      extra.textContent = 'body{display:block;overflow:auto}' +
+        '.lhome-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}' +
+        '.lhome-top a{font-size:14px;color:var(--ink)}' +
+        '.lsearch{font:inherit;width:100%;max-width:420px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}' +
+        '.lrow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line);text-decoration:none;color:var(--ink)}' +
+        '.lrow:first-of-type{border-top:0}' +
+        '.lrow .pg{font-family:var(--font-display);font-weight:800;font-size:14px;background:var(--u);color:#1a2030;border-radius:6px;padding:3px 8px 1px;white-space:nowrap;min-width:5.6em;text-align:center}' +
+        '.lrow .t{font-weight:600;font-size:16px;min-width:0}' +
+        '.lrow .play{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--u);color:#1a2030;font-size:12px}' +
+        '.lrow:hover .t{text-decoration:underline;text-underline-offset:3px}' +
+        '.lnotes{font-size:13px;color:var(--muted);margin:-4px 0 4px calc(5.6em + 28px)}' +
+        '.lnotes a{color:var(--muted)}' +
+        '.lempty{color:var(--muted)}' +
+        '.lmissing{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}';
+      document.head.appendChild(extra);
+
+      var app = document.createElement('div'); app.id = 'app'; document.body.appendChild(app);
+      Promise.all([
+        fetch('/notebook-config.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+        dbGet('content/spreads', {})
+      ]).then(function (c) {
+        NB_CONFIG = c[0] && c[0].objectives ? mergeSpreads(c[0], c[1]) : null;
+        var cfg = NB_CONFIG || {}, units = (cfg.units || []).slice(), objs = cfg.objectives || [];
+        function objOf(l) {
+          var id = (String(l.group).match(/^(\d+\.\d+)/) || [])[1];
+          return id ? objs.filter(function (o) { return o.id === id; })[0] || { id: id, name: String(l.group).replace(/^\d+\.\d+\s*/, ''), unit: id.split('.')[0] } : null;
+        }
+        app.innerHTML = '<main class="landing"><div class="landing-inner">' +
+          '<header class="land-head"><div class="lhome-top"><span class="eyebrow">Lesson videos</span><a href="/">Interactive notebook →</a></div>' +
+          '<h1>Algebra 3/4 Lessons</h1><p>Watch a lesson again at your own pace. Each one follows our notebook pages, so have your notebook open.</p></header>' +
+          (missing ? '<p class="lmissing">That lesson link didn’t match a lesson. Pick it from the list below.</p>' : '') +
+          '<input type="search" class="lsearch" id="lsearch" placeholder="Search a page number or topic (e.g. 73, factoring)" aria-label="Search lessons by page number or topic">' +
+          '<div class="obj-list" id="llist"></div></div></main>';
+        var listEl = document.getElementById('llist'), input = document.getElementById('lsearch');
+
+        function render() {
+          var q = input.value.trim().toLowerCase(), num = /^\d+$/.test(q) ? +q : null;
+          var match = function (l) {
+            if (!q) return true;
+            if (num !== null) { var r = pageRange(l.pages); return !!(r && num >= r[0] && num <= r[1]); }
+            return (l.title + ' ' + l.group + ' ' + (l.parts || []).map(function (p) { return p.t; }).join(' ')).toLowerCase().indexOf(q) >= 0;
+          };
+          var shown = LESSONS.filter(match), html = '', lastSem = null, used = {};
+          var groups = units.map(function (u) { return { u: u, items: shown.filter(function (l) { var o = objOf(l); return o && String(o.unit) === String(u.id); }) }; });
+          groups.push({ u: { id: '', name: 'More lessons' }, items: shown.filter(function (l) { var o = objOf(l); return !o || !units.some(function (u) { return String(u.id) === String(o.unit); }); }) });
+          groups.forEach(function (g) {
+            if (!g.items.length) return;
+            if (g.u.semester && g.u.semester !== lastSem) { html += '<h3 class="sem">Semester ' + esc(g.u.semester) + '</h3>'; lastSem = g.u.semester; }
+            html += '<details class="unit" open style="--u:' + esc(g.u.color || 'var(--desk)') + '"><summary><span class="uname">' + esc(g.u.name) + '</span><span class="ucount">' +
+              g.items.length + (g.items.length === 1 ? ' lesson' : ' lessons') + '</span></summary><div class="unit-slos">';
+            var bySlo = [];
+            g.items.forEach(function (l) { var o = objOf(l), key = o ? o.id : l.group; var b = bySlo.filter(function (x) { return x.key === key; })[0]; if (!b) { b = { key: key, o: o, group: l.group, items: [] }; bySlo.push(b); } b.items.push(l); });
+            bySlo.sort(function (a, b) { return (parseFloat(a.key) || 99) - (parseFloat(b.key) || 99); });
+            bySlo.forEach(function (b) {
+              html += '<div class="obj-card"><div class="obj-main" style="cursor:default">' + (b.o ? '<span class="slo">SLO ' + esc(b.o.id) + '</span><span class="name">' + esc(b.o.name) + '</span>' : '<span></span><span class="name">' + esc(b.group) + '</span>') + '<span></span></div><div>';
+              b.items.sort(function (x, y) { return (parseInt(x.pages, 10) || 9999) - (parseInt(y.pages, 10) || 9999); }).forEach(function (l) {
+                var nb = notebookLink(l);
+                html += '<a class="lrow" href="' + BASE + '?lesson=' + encodeURIComponent(l.slug) + '"><span class="pg">' + (l.pages ? 'pp. ' + esc(l.pages) : 'Lesson') + '</span>' +
+                  '<span class="t">' + esc(l.title) + '</span><span class="play" aria-hidden="true">▶</span></a>' +
+                  (nb ? '<p class="lnotes"><a href="' + esc(nb.href) + '">Class notes for pp. ' + esc(nb.label) + '</a></p>' : '');
+              });
+              html += '</div></div>';
+            });
+            html += '</div></details>';
+          });
+          listEl.innerHTML = html || '<p class="lempty">' + (q ? 'No lesson matches “' + esc(input.value.trim()) + '”. Try a page number like 73.' : 'No lessons yet.') + '</p>';
+        }
+        function esc(t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
+        input.addEventListener('input', render);
+        render();
+      });
+    }
+
+    var done = false;
+    function tryAdd() { if (!done && addSwitcher()) done = true; }
+    frame.addEventListener('load', function () { tryAdd(); setTimeout(tryAdd, 300); });
+
+    function safeJson(v) { return JSON.stringify(v).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029'); }
+
+    var hosted = fetch(BASE + 'lessons.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+    Promise.all([hosted, dbGet('content/lessons', {})])
+      .then(function (r) {
+        LESSONS = mergeLessons(r[0], r[1]);
+        if (!LESSONS.length && params.get('lesson')) { fail('The lesson list didn’t load. <a href="">Try again</a>.'); return; }
+        var want = params.get('lesson');
+        var current = LESSONS.filter(function (l) { return l.slug === want; })[0];
+        if (!current) return showHome(!!want);
+        LESSON_FILE = current.slug;
+        document.title = current.title + ' · Algebra 3/4';
+        frame.title = current.title;
+        var view = String(params.get('view') || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+        var cfgP = Promise.all([
+          fetch('/notebook-config.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+          dbGet('content/spreads', {})
+        ]).then(function (c) { return c[0] ? mergeSpreads(c[0], c[1]) : null; });
+        var fileP = current.src === 'db'
+          ? dbGet('content/lessonFiles/' + current.slug, null).then(function (t) { if (!t) throw new Error('file'); return String(t); })
+          : fetch(BASE + 'files/' + current.file, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('file'); return r.text(); });
+        return Promise.all([fileP, cfgP]).then(function (res) {
+          NB_CONFIG = res[1];
+          var boot = '<script>window.LESSON_VIEW=' + safeJson(view) +
+            ';window.LESSON_LINK=' + safeJson(location.origin + BASE + '?lesson=' + current.slug + '&view=') +
+            ';window.LESSON_LIST=' + safeJson(LESSONS.map(function (l) { return { slug: l.slug, title: l.title, group: l.group }; })) +
+            ';window.LESSON_CURRENT=' + safeJson(current.slug) + ';<\/script>';
+          var html = res[0];
+          html = /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, function (m) { return m + boot; }) : boot + html;
+          frame.srcdoc = html;
+          frame.hidden = false;
+          waitEl.hidden = true;
+          setTimeout(function () { tryAdd(); if (!done && LESSONS.length > 1) showFallback(); }, 2500);
+        });
+      })
+      .catch(function () {
+        fail('The lesson didn’t load. Check your internet connection, then <a href="">try again</a>.');
+      });
+  })();
+  </script>
+</body>
+</html>

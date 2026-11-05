@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher hub · Algebra 3/4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Lexend:wght@400;500;600&display=swap">
+<style>
+  :root { color-scheme: light; --bg:#f3f5f9; --card:#fff; --ink:#1d2433; --muted:#556073; --line:#d9dee8; --soft:#eef1f6;
+          --accent:#2f5d9e; --accent-ink:#fff; --ok:#1f6b45; --okbg:#e6f4ec; --warn:#8a3b2e; --warnbg:#fbeeea; --chip:#e8eefb; --mine:#efe6fb; --mine-ink:#4b2f7a; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "Lexend", system-ui, sans-serif; }
+  a { color: var(--accent); }
+  main { max-width: 980px; margin: 0 auto; padding: 28px 16px 64px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-family: "League Spartan", "Lexend", sans-serif; font-size: 36px; line-height: 1.1; margin: 4px 0 6px; }
+  h2 { font-size: 19px; margin: 0 0 4px; }
+  h3 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 22px 0 8px; }
+  p { margin: 0 0 10px; }
+  .muted { color: var(--muted); }
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 20px; justify-content: space-between; margin-bottom: 18px; }
+  .who { font-size: 13px; color: var(--muted); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .tabs { display: flex; gap: 6px; margin: 0 0 16px; border-bottom: 1px solid var(--line); }
+  .tabs button { font: inherit; font-weight: 600; background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px; color: var(--muted); cursor: pointer; }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 18px; }
+  .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 18px; text-align: center; background: var(--soft); cursor: pointer; }
+  .drop.over { border-color: var(--accent); background: var(--chip); }
+  .drop b { color: var(--accent); }
+  .btn { font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 8px 14px; cursor: pointer; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.small { font-size: 13px; padding: 5px 10px; border-radius: 8px; }
+  .btn.danger { color: var(--warn); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn:focus-visible, input:focus-visible, select:focus-visible, .drop:focus-visible, .tabs button:focus-visible { outline: 3px solid #f2c94c; outline-offset: 2px; }
+  label.f { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; }
+  textarea { font: 13px/1.5 ui-monospace, Menlo, monospace; width: 100%; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); resize: vertical; }
+  input[type=text], input[type=email], input[type=password], select { font: inherit; width: 100%; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } h1 { font-size: 30px; } }
+  .preview { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 14px; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; overflow-wrap: anywhere; }
+  .link { font-family: ui-monospace, Menlo, monospace; font-size: 13px; background: var(--soft); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+  .msg { margin-top: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+  .msg.ok { background: var(--okbg); color: var(--ok); }
+  .msg.err { background: var(--warnbg); color: var(--warn); }
+  .msg.info { background: var(--chip); color: var(--ink); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 9px 8px; border-bottom: 1px solid var(--soft); vertical-align: top; }
+  td.acts { white-space: nowrap; text-align: right; }
+  td.acts .btn { margin-left: 4px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted); white-space: nowrap; }
+  .badge.mine { background: var(--mine); color: var(--mine-ink); }
+  .badge.hid { background: var(--warnbg); color: var(--warn); }
+  tr.hidden td:not(.acts) { opacity: .55; }
+  .pg { font-weight: 600; white-space: nowrap; }
+  .slo { margin-top: 6px; }
+  .slo h4 { margin: 14px 0 4px; font-size: 15px; }
+  .empty { color: var(--muted); font-size: 14px; padding: 4px 0 8px; }
+  .signin { max-width: 380px; }
+  .gbtn { display: flex; width: 100%; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding: 10px 14px; background: #fff; color: #1f1f1f; }
+  .or { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; font-size: 12px; color: var(--muted); }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .note { font-size: 13px; color: var(--muted); }
+  @media (max-width: 720px) { td.acts { white-space: normal; text-align: left; } .hide-sm { display: none; } }
+</style>
+</head>
+<body>
+<main id="main">
+  <div class="top">
+    <div><span class="eyebrow">Algebra 3/4</span><h1>Teacher hub</h1>
+      <p class="muted" style="margin:0">Add or replace lesson videos and notebook pages. Changes show up for students right away, no deploy needed.</p></div>
+    <div class="who" id="who"></div>
+  </div>
+  <div id="view"><p class="muted">Loading…</p></div>
+</main>
+
+<script src="/vendor/firebase-app-compat.js"></script>
+<script src="/vendor/firebase-auth-compat.js"></script>
+<script src="/vendor/firebase-database-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var view = $('#view'), who = $('#who');
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function mb(n) { return (n / 1048576).toFixed(1) + ' MB'; }
+  function when(t) { return t ? new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''; }
+  var ORIGIN = location.origin;
+  var MAX = 9.5 * 1048576;   // one database value can be 10 MB
+
+  if (!window.NB_FIREBASE_CONFIG || /PASTE/.test(NB_FIREBASE_CONFIG.apiKey || 'PASTE')) { view.innerHTML = '<p>Paste your Firebase keys into firebase-config.js first.</p>'; return; }
+  firebase.initializeApp(NB_FIREBASE_CONFIG);
+  var auth = firebase.auth(), db = firebase.database();
+  var TEACHERS = (window.NB_TEACHER_EMAILS || []).map(function (e) { return String(e).toLowerCase(); });
+
+  auth.onAuthStateChanged(function (u) {
+    var email = u && u.email ? u.email.toLowerCase() : '';
+    if (!email) return showSignIn();
+    if (TEACHERS.indexOf(email) < 0) {
+      who.innerHTML = '';
+      view.innerHTML = '<div class="card"><p>Signed in as ' + esc(email) + ', which isn\'t the teacher account.</p><button class="btn" id="out">Sign out</button></div>';
+      $('#out').onclick = function () { auth.signOut(); };
+      return;
+    }
+    who.innerHTML = '<span>Signed in as <b>' + esc(email) + '</b></span><a href="/">Notebook</a><a href="/lessons/">Lessons</a><button class="btn small" id="out">Sign out</button>';
+    $('#out').onclick = function () { auth.signOut(); };
+    start();
+  });
+
+  function showSignIn() {
+    who.innerHTML = '';
+    view.innerHTML = '<form class="card signin" id="si" novalidate><h2>Teacher sign-in</h2>' +
+      '<button type="button" class="btn gbtn" id="gg"><svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>Sign in with Google</button>' +
+      '<p class="or"><span>or use your notebook password</span></p>' +
+      '<label class="f" for="em">Email</label><input id="em" type="email" autocomplete="username" required>' +
+      '<label class="f" for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>' +
+      '<div class="actions"><button class="btn primary" type="submit" id="go">Sign in</button></div><div id="sierr"></div></form>';
+    $('#gg').focus();
+    $('#gg').onclick = function () {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ hd: 'yumaunion.org', prompt: 'select_account' });
+      $('#sierr').innerHTML = '';
+      auth.signInWithPopup(provider).catch(function (x) {
+        var code = (x && x.code) || '';
+        if (/popup-blocked|operation-not-supported|web-storage-unsupported/.test(code)) return auth.signInWithRedirect(provider);
+        if (/popup-closed|cancelled-popup/.test(code)) return;
+        $('#sierr').innerHTML = '<div class="msg err">' + (/operation-not-allowed/.test(code) ? 'Google sign-in isn\'t turned on yet. In the Firebase console: Authentication, Sign-in method, Google.'
+          : /unauthorized-domain/.test(code) ? 'This address isn\'t allowed for Google sign-in yet. In the Firebase console: Authentication, Settings, Authorized domains.'
+          : 'Google sign-in didn\'t work (' + esc(code || x) + '). Use your password instead.') + '</div>';
+      });
+    };
+    $('#si').onsubmit = function (e) {
+      e.preventDefault();
+      var go = $('#go'); go.disabled = true; go.textContent = 'Signing in…';
+      auth.signInWithEmailAndPassword($('#em').value.trim(), $('#pw').value).catch(function (x) {
+        go.disabled = false; go.textContent = 'Sign in';
+        var code = (x && x.code) || '';
+        $('#sierr').innerHTML = '<div class="msg err">' + (/network/.test(code) ? 'Couldn\'t reach the sign-in server. Check the connection and try again.'
+          : /too-many/.test(code) ? 'Too many tries. Wait a few minutes, then try again.' : 'That email and password didn\'t match.') + '</div>';
+      });
+    };
+  }
+
+  /* ================= data ================= */
+  var S = { tab: 'lessons', hostedLessons: [], dbLessons: {}, hostedCfg: null, dbSpreads: {} };
+  try { S.tab = sessionStorage.getItem('hub-tab') || 'lessons'; } catch (e) {}
+
+  function start() {
+    view.innerHTML = '<p class="muted">Loading…</p>';
+    Promise.all([
+      fetch('/lessons/lessons.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+      fetch('/notebook-config.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }),
+    ]).then(function (r) {
+      S.hostedLessons = r[0] || []; S.hostedCfg = r[1];
+      db.ref('content/lessons').on('value', function (s) { S.dbLessons = s.val() || {}; render(); });
+      db.ref('content/spreads').on('value', function (s) { S.dbSpreads = s.val() || {}; render(); });
+    }).catch(function (e) { view.innerHTML = '<div class="msg err">Couldn\'t load the notebook settings: ' + esc(e.message || e) + '</div>'; });
+  }
+
+  /* ---------- lessons ---------- */
+  function lessonKey(name) {
+    return String(name).replace(/\.html?$/i, '').replace(/^copy of\s+/i, '').replace(/\s*\(\d+\)\s*$/, '').replace(/^\d+[\s._-]*/, '')
+      .toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  function dec(t) { return t.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'"); }
+  function lessonInfo(text) {
+    var head = text.slice(0, 8000), body = text.slice(0, 200000);
+    var t = head.match(/<title>([^<]*)<\/title>/i), g = head.match(/<meta\s+name=["']lesson-group["']\s+content=["']([^"']+)["']/i);
+    var pm = body.match(/Notes p\. ?(\d+)(?:\s*[–-]\s*(\d+))?/);
+    var parts = [], re = /<section\b[^>]*>/g, m;
+    while ((m = re.exec(body))) {
+      var tag = m[0], at = function (k) { var x = tag.match(new RegExp('data-' + k + '="([^"]*)"')); return x ? dec(x[1]) : ''; };
+      var v = at('view'); if (!v || v === 'tour' || v === 'key') continue;
+      parts.push({ v: v, t: at('title'), p: at('pg') });
+    }
+    var title = t ? dec(t[1].trim()) : '';
+    var guess = /factor/i.test(title) ? '3.1 Factoring' : /radical|square root/i.test(title) ? '1.4 Radical Equations' : '';
+    return { title: title, group: (g && g[1].trim()) || guess || 'More lessons', pages: pm ? (pm[2] ? pm[1] + '–' + pm[2] : pm[1]) : '', parts: parts };
+  }
+  function allLessons() {
+    var map = {};
+    S.hostedLessons.forEach(function (l) { map[l.slug] = { slug: l.slug, title: l.title, group: l.group, pages: l.pages, builtIn: true }; });
+    Object.keys(S.dbLessons).forEach(function (slug) {
+      var e = S.dbLessons[slug] || {}, cur = map[slug] || { slug: slug, builtIn: false };
+      if (e.title) { cur.title = e.title; cur.group = e.group; cur.pages = e.pages; cur.uploaded = e.updated || 1; cur.size = e.size; }
+      cur.hidden = !!e.hidden;
+      if (cur.title) map[slug] = cur;
+    });
+    var unit = function (g) { var n = parseFloat(g); return isNaN(n) ? -1 : n; };
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) {
+      return unit(b.group) - unit(a.group) || String(a.group).localeCompare(b.group) || (parseInt(a.pages, 10) || 9999) - (parseInt(b.pages, 10) || 9999);
+    });
+  }
+
+  /* ---------- notebook pages ---------- */
+  var firstPage = function (id) { var n = parseInt(String(id), 10); return isNaN(n) ? 99999 : n; };
+  function mergedCfg() {
+    var c = JSON.parse(JSON.stringify(S.hostedCfg || {})), extra = S.dbSpreads;
+    c.spreads = c.spreads || []; c.objectives = c.objectives || [];
+    c.spreads.forEach(function (s) { s.builtIn = true; });
+    Object.keys(extra).forEach(function (id) {
+      var e = extra[id] || {};
+      c.objectives.forEach(function (o) { if (e.hidden || (e.obj && o.id !== e.obj)) o.spreads = (o.spreads || []).filter(function (x) { return x !== id; }); });
+      var cur = c.spreads.filter(function (s) { return s.id === id; })[0];
+      if (!cur) { cur = { id: id, builtIn: false }; c.spreads.push(cur); }
+      cur.hidden = !!e.hidden; cur.edited = true;
+      if (e.label) cur.label = e.label;
+      if (e.title) cur.title = e.title;
+      if (Array.isArray(e.videos)) cur.videos = e.videos; else if (e.videos === 'none') cur.videos = [];
+      if (e.src === 'db') { cur.uploaded = e.updated || 1; cur.file = e.file; cur.size = e.size; }
+      cur.obj = e.obj || cur.obj;
+      if (e.obj && !e.hidden) {
+        var o = c.objectives.filter(function (x) { return x.id === e.obj; })[0];
+        if (o) { o.spreads = o.spreads || []; if (o.spreads.indexOf(id) < 0) o.spreads.push(id); var key = function (id) { var sp = c.spreads.filter(function (x) { return x.id === id; })[0]; return sp && sp.sort != null ? +sp.sort : firstPage(id); }; o.spreads.sort(function (a, b) { return key(a) - key(b); }); }
+      }
+    });
+    c.objectives.forEach(function (o) { (o.spreads || []).forEach(function (id) { c.spreads.forEach(function (s) { if (s.id === id && !s.obj) s.obj = o.id; }); }); });
+    return c;
+  }
+  function objLabel(o) { return /^\d/.test(o.id) ? 'SLO ' + o.id + ' – ' + o.name : o.name; }
+  function sloOptions(c, sel) {
+    var units = {}; (c.units || []).forEach(function (u) { units[u.id] = u.name || ('Unit ' + u.id); });
+    var html = '', grp = null;
+    c.objectives.forEach(function (o) {
+      var g = o.unit ? (units[o.unit] || 'Unit ' + o.unit) : 'Other';
+      if (g !== grp) { if (grp !== null) html += '</optgroup>'; grp = g; html += '<optgroup label="' + esc(g) + '">'; }
+      html += '<option value="' + esc(o.id) + '"' + (o.id === sel ? ' selected' : '') + '>' + esc(objLabel(o)) + '</option>';
+    });
+    return html + (grp !== null ? '</optgroup>' : '');
+  }
+  function parseSpread(code) {
+    code = String(code).replace(/^﻿/, '').replace(/<\/?script[^>]*>/gi, '');
+    var got = null;
+    try { new Function('NB', code)({ registerSpread: function (d) { got = d; } }); }
+    catch (e) { return { error: 'This file has an error in it (' + e.message + '). Ask Claude for a fresh copy.' }; }
+    if (!got || !got.id) return { error: 'This doesn\'t look like a notebook page file. Notebook page files are named like Spread_76_77.js.' };
+    var nums = (got.pages || []).map(function (p) { return p.num; }).filter(function (n) { return /^\d+$/.test(String(n)); });
+    return { id: String(got.id), code: code, pages: nums, label: String(got.id).replace(/-/g, '–') };
+  }
+  function cleanVideoUrl(u) {
+    var m = String(u).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return m ? 'https://www.youtube.com/watch?v=' + m[1] : String(u);
+  }
+  function parseVideos(text) {
+    var out = [], bad = [];
+    String(text || '').split(/\n+/).forEach(function (line) {
+      line = line.trim(); if (!line) return;
+      var m = line.match(/https?:\/\/\S+/);
+      if (!m) { bad.push(line); return; }
+      out.push({ url: cleanVideoUrl(m[0]), label: line.replace(m[0], '').replace(/^[\s·:–-]+|[\s·:–-]+$/g, '') });
+    });
+    return { list: out, bad: bad };
+  }
+  function videosText(v) { return (v || []).map(function (x) { return x.url + (x.label ? ' ' + x.label : ''); }).join('\n'); }
+  function safeKey(k) { return String(k).replace(/[.#$\[\]\/]/g, '_'); }
+
+  /* ================= rendering ================= */
+  function render() {
+    if (!S.hostedCfg) return;
+    var keep = document.activeElement && document.activeElement.id;
+    var pending = $('#lessonForm') && $('#lessonForm').dataset.busy === '1' || $('#pageForm') && $('#pageForm').dataset.busy === '1';
+    if (pending) return;   // don't wipe a form while it's uploading
+    var draftL = S.draftLesson, draftP = S.draftPage;
+    view.innerHTML = '<div class="tabs" role="tablist">' +
+      '<button role="tab" data-tab="lessons" aria-selected="' + (S.tab === 'lessons') + '">Lesson videos</button>' +
+      '<button role="tab" data-tab="pages" aria-selected="' + (S.tab === 'pages') + '">Notebook pages</button></div>' +
+      '<div id="panel"></div>';
+    view.querySelectorAll('[data-tab]').forEach(function (b) {
+      b.onclick = function () { S.tab = b.dataset.tab; try { sessionStorage.setItem('hub-tab', S.tab); } catch (e) {} render(); };
+    });
+    if (S.tab === 'lessons') renderLessons(draftL); else renderPages(draftP);
+    if (keep && document.getElementById(keep)) document.getElementById(keep).focus();
+  }
+
+  function dropZone(id, accept, text) {
+    return '<input type="file" id="' + id + 'File" accept="' + accept + '" hidden>' +
+      '<div class="drop" id="' + id + 'Drop" tabindex="0" role="button">' + text + '</div>';
+  }
+  function wireDrop(id, onFile) {
+    var input = $('#' + id + 'File'), zone = $('#' + id + 'Drop');
+    zone.onclick = function () { input.click(); };
+    zone.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } };
+    input.onchange = function () { if (input.files[0]) onFile(input.files[0]); input.value = ''; };
+    zone.ondragover = function (e) { e.preventDefault(); zone.classList.add('over'); };
+    zone.ondragleave = function () { zone.classList.remove('over'); };
+    zone.ondrop = function (e) { e.preventDefault(); zone.classList.remove('over'); var f = e.dataTransfer.files[0]; if (f) onFile(f); };
+  }
+  function copy(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied!'; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () { prompt('Copy this link:', text); });
+    else prompt('Copy this link:', text);
+  }
+
+  /* ---------- lessons tab ---------- */
+  function renderLessons(draft) {
+    var panel = $('#panel'), list = allLessons();
+    var html = '<section class="card" id="lessonForm"><h2>Add or replace a lesson</h2>' +
+      '<p class="muted">Pick the lesson\'s <b>.html</b> file. If a lesson already uses that link name, the new file replaces it and the link stays the same.</p>' +
+      dropZone('les', '.html,.htm,text/html', '<b>Choose a lesson file</b> or drop it here') +
+      '<div id="lesPrev"></div></section>';
+    html += '<section class="card"><h2>All lessons</h2><p class="note">“Uploaded” lessons came from this hub. “Built in” lessons came with the site.</p>';
+    var grp = null;
+    if (!list.length) html += '<p class="empty">No lessons yet.</p>';
+    list.forEach(function (l, i) {
+      if (l.group !== grp) { if (grp !== null) html += '</tbody></table>'; grp = l.group; html += '<h3>' + esc(grp) + '</h3><table><tbody>'; }
+      var link = ORIGIN + '/lessons/?lesson=' + l.slug;
+      html += '<tr class="' + (l.hidden ? 'hidden' : '') + '"><td class="pg">' + (l.pages ? 'p. ' + esc(l.pages) : '—') + '</td>' +
+        '<td>' + esc(l.title) + '<br><span class="link">?lesson=' + esc(l.slug) + '</span></td>' +
+        '<td class="hide-sm">' + (l.hidden ? '<span class="badge hid">Hidden</span> ' : '') +
+          (l.uploaded ? '<span class="badge mine">Uploaded ' + esc(when(l.uploaded)) + '</span>' : '<span class="badge">Built in</span>') + '</td>' +
+        '<td class="acts"><a class="btn small" href="' + esc(link) + '" target="_blank" rel="noopener">Open ↗</a>' +
+          '<button class="btn small" data-copy="' + esc(link) + '">Copy link</button>' +
+          '<button class="btn small" data-replace="' + esc(l.slug) + '">Replace</button>' +
+          '<button class="btn small" data-hide="' + esc(l.slug) + '">' + (l.hidden ? 'Show' : 'Hide') + '</button>' +
+          (l.uploaded ? '<button class="btn small danger" data-del="' + esc(l.slug) + '">' + (l.builtIn ? 'Undo upload' : 'Delete') + '</button>' : '') +
+        '</td></tr>';
+    });
+    if (grp !== null) html += '</tbody></table>';
+    html += '</section>';
+    panel.innerHTML = html;
+
+    wireDrop('les', function (f) { pickLesson(f, null); });
+    panel.querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { copy(b.dataset.copy, b); }; });
+    panel.querySelectorAll('[data-replace]').forEach(function (b) {
+      b.onclick = function () {
+        var input = $('#lesFile'); input.onchange = function () { if (input.files[0]) pickLesson(input.files[0], b.dataset.replace); input.value = ''; };
+        input.click();
+      };
+    });
+    panel.querySelectorAll('[data-hide]').forEach(function (b) {
+      b.onclick = function () {
+        var slug = b.dataset.hide, e = S.dbLessons[slug] || {};
+        if (e.hidden) { if (e.title) db.ref('content/lessons/' + slug + '/hidden').remove(); else db.ref('content/lessons/' + slug).remove(); }
+        else db.ref('content/lessons/' + slug + '/hidden').set(true);
+      };
+    });
+    panel.querySelectorAll('[data-del]').forEach(function (b) {
+      b.onclick = function () {
+        var slug = b.dataset.del, l = list.filter(function (x) { return x.slug === slug; })[0];
+        var ask = l.builtIn ? 'Undo your upload of "' + l.title + '"? Students will see the built-in version again.' : 'Delete "' + l.title + '"? Its link will stop working.';
+        if (!confirm(ask)) return;
+        b.disabled = true;
+        var upd = {}; upd['lessons/' + slug] = null; upd['lessonFiles/' + slug] = null;
+        db.ref('content').update(upd).catch(function (err) { alert('That didn\'t work: ' + err.message); b.disabled = false; });
+      };
+    });
+    if (draft) showLessonDraft(draft); else if (S.flashL) $('#lesPrev').innerHTML = S.flashL;
+  }
+
+  function pickLesson(file, forceSlug) {
+    S.flashL = '';
+    var reader = new FileReader();
+    reader.onload = function () {
+      var text = String(reader.result || '');
+      if (!/<html|<section|<body/i.test(text)) return showLessonDraft({ error: file.name + ' doesn\'t look like a lesson file. Lesson files end in .html.' });
+      if (text.length > MAX) return showLessonDraft({ error: file.name + ' is ' + mb(text.length) + '. The limit is 9.5 MB. Ask Claude to shrink the audio in it.' });
+      var info = lessonInfo(text);
+      showLessonDraft({ name: file.name, text: text, info: info, slug: forceSlug || lessonKey(file.name) || 'lesson' });
+    };
+    reader.onerror = function () { showLessonDraft({ error: 'Couldn\'t read ' + file.name + '.' }); };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function showLessonDraft(d) {
+    S.draftLesson = d;
+    var box = $('#lesPrev'); if (!box) return;
+    if (d.error) { box.innerHTML = '<div class="msg err">' + esc(d.error) + '</div>'; return; }
+    var list = allLessons();
+    var html = '<div class="preview"><dl class="facts">' +
+      '<dt>File</dt><dd>' + esc(d.name) + ' (' + mb(d.text.length) + ')</dd>' +
+      '<dt>Title</dt><dd>' + esc(d.info.title || '(no title in the file)') + '</dd>' +
+      '<dt>Group</dt><dd>' + esc(d.info.group) + '</dd>' +
+      '<dt>Notebook pages</dt><dd>' + esc(d.info.pages || '—') + '</dd>' +
+      '<dt>Parts</dt><dd>' + d.info.parts.length + '</dd></dl>' +
+      '<label class="f" for="lesSlug">Link name</label><input type="text" id="lesSlug" value="' + esc(d.slug) + '" spellcheck="false">' +
+      '<p class="note" id="lesLink"></p><div id="lesWhat"></div>' +
+      '<div class="actions"><button class="btn primary" id="lesGo">Upload lesson</button><button class="btn" id="lesCancel">Cancel</button></div><div id="lesMsg"></div></div>';
+    box.innerHTML = html;
+    var slugIn = $('#lesSlug');
+    function upd() {
+      var slug = slugIn.value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+/, '');
+      if (slug !== slugIn.value) slugIn.value = slug;
+      d.slug = slug;
+      var link = ORIGIN + '/lessons/?lesson=' + slug;
+      $('#lesLink').innerHTML = 'Students will use <span class="link">' + esc(link) + '</span>';
+      var ex = list.filter(function (l) { return l.slug === slug; })[0];
+      $('#lesWhat').innerHTML = ex ? '<div class="msg info">This <b>replaces</b> “' + esc(ex.title) + '”. The link stays the same.</div>'
+        : '<div class="msg info">This is a <b>new lesson</b>.</div>';
+      $('#lesGo').disabled = !slug;
+    }
+    slugIn.oninput = upd; upd();
+    $('#lesCancel').onclick = function () { S.draftLesson = null; S.flashL = ''; box.innerHTML = ''; };
+    $('#lesGo').onclick = function () {
+      var slug = d.slug.replace(/-+$/, ''); if (!slug) return;
+      var form = $('#lessonForm'); form.dataset.busy = '1';
+      var go = $('#lesGo'); go.disabled = true; go.textContent = 'Uploading ' + mb(d.text.length) + '…';
+      var info = d.info;
+      db.ref('content/lessonFiles/' + slug).set(d.text).then(function () {
+        return db.ref('content/lessons/' + slug).set({ title: info.title || slug, group: info.group, pages: info.pages, parts: info.parts,
+          size: d.text.length, file: d.name, updated: firebase.database.ServerValue.TIMESTAMP });
+      }).then(function () {
+        form.dataset.busy = ''; S.draftLesson = null;
+        var link = ORIGIN + '/lessons/?lesson=' + slug;
+        S.flashL = '<div class="msg ok">Uploaded “' + esc(info.title || slug) + '”. Students see it now at <a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(link) + '</a>.</div>';
+        render();
+      }).catch(function (err) {
+        form.dataset.busy = ''; go.disabled = false; go.textContent = 'Upload lesson';
+        $('#lesMsg').innerHTML = '<div class="msg err">The upload didn\'t finish: ' + esc(err.message || err) + '</div>';
+      });
+    };
+  }
+
+  /* ---------- notebook pages tab ---------- */
+  function renderPages(draft) {
+    var panel = $('#panel'), c = mergedCfg();
+    var html = '<section class="card" id="pageForm"><h2>Add or replace notebook pages</h2>' +
+      '<p class="muted">Pick a page file from Claude (named like <b>Spread_76_77.js</b>). If those pages are already in the notebook, the new file replaces them. Ink you already wrote on them stays.</p>' +
+      dropZone('pg', '.js,.html,.htm,text/javascript,text/html', '<b>Choose a page file</b> or drop it here') +
+      '<div id="pgPrev"></div></section>';
+    var units = {}; (c.units || []).forEach(function (u) { units[u.id] = u; });
+    html += '<section class="card"><h2>Pages by SLO</h2><p class="note">Change a title, add video links, or move pages to another SLO with <b>Edit</b>. <b>Hide</b> takes pages out of the student list without deleting any ink.</p>';
+    var spreadById = {}; c.spreads.forEach(function (s) { spreadById[s.id] = s; });
+    var grp = null;
+    c.objectives.forEach(function (o) {
+      var u = o.unit ? units[o.unit] : null, g = u ? (u.name || 'Unit ' + u.id) : 'Other';
+      if (g !== grp) { grp = g; html += '<h3>' + esc(g) + '</h3>'; }
+      html += '<div class="slo"><h4>' + esc(objLabel(o)) + (o.teacherOnly ? ' <span class="badge">Teacher only</span>' : '') + '</h4>';
+      var ids = o.spreads || [];
+      if (!ids.length) html += '<p class="empty">No pages yet.</p>';
+      else {
+        html += '<table><tbody>';
+        ids.forEach(function (id) { html += pageRow(spreadById[id] || { id: id, title: '' }, o); });
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    });
+    var hidden = c.spreads.filter(function (s) { return s.hidden; });
+    if (hidden.length) {
+      html += '<h3>Hidden pages</h3><table><tbody>';
+      hidden.forEach(function (s) { html += pageRow(s, null); });
+      html += '</tbody></table>';
+    }
+    html += '</section>';
+    panel.innerHTML = html;
+
+    wireDrop('pg', function (f) { pickPage(f); });
+    panel.querySelectorAll('[data-pedit]').forEach(function (b) { b.onclick = function () { editPage(b.dataset.pedit, c); }; });
+    panel.querySelectorAll('[data-preplace]').forEach(function (b) {
+      b.onclick = function () { var input = $('#pgFile'); input.onchange = function () { if (input.files[0]) pickPage(input.files[0], b.dataset.preplace); input.value = ''; }; input.click(); };
+    });
+    panel.querySelectorAll('[data-phide]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.dataset.phide, e = S.dbSpreads[id] || {}, s = spreadById[id] || {};
+        if (e.hidden) {
+          if (e.src === 'db' || e.title) db.ref('content/spreads/' + safeKey(id) + '/hidden').remove();
+          else db.ref('content/spreads/' + safeKey(id)).remove();
+        } else db.ref('content/spreads/' + safeKey(id)).update({ hidden: true, obj: s.obj || e.obj || null });
+      };
+    });
+    panel.querySelectorAll('[data-pundo]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.dataset.pundo, s = spreadById[id] || {};
+        var msg = s.builtIn ? 'Undo your changes to pages ' + id + '? The built-in version, title and SLO come back. Ink stays.'
+          : 'Remove pages ' + id + ' from the notebook? Ink on them is kept in case you add them again.';
+        if (!confirm(msg)) return;
+        var upd = {}; upd['spreads/' + safeKey(id)] = null;
+        if (s.uploaded && s.file) upd['files/' + safeKey(s.file)] = null;
+        db.ref('content').update(upd).catch(function (err) { alert('That didn\'t work: ' + err.message); });
+      };
+    });
+    if (draft) showPageDraft(draft); else if (S.flashP) $('#pgPrev').innerHTML = S.flashP;
+  }
+
+  function pageRow(s, o) {
+    var open = o ? ORIGIN + '/?obj=' + encodeURIComponent(o.id) + '&spread=' + encodeURIComponent(s.id) : '';
+    return '<tr class="' + (s.hidden ? 'hidden' : '') + '"><td class="pg">' + (/^\d/.test(s.label || s.id) ? 'pp. ' : '') + esc(s.label || s.id) + '</td><td>' + esc(s.title || '') + ((s.videos || []).length ? ' <span class="badge">▶ ' + s.videos.length + (s.videos.length === 1 ? ' video' : ' videos') + '</span>' : '') + '</td>' +
+      '<td class="hide-sm">' + (s.uploaded ? '<span class="badge mine">Uploaded ' + esc(when(s.uploaded)) + '</span>' : s.edited && !s.hidden ? '<span class="badge mine">Edited</span>' : s.hidden ? '<span class="badge hid">Hidden</span>' : '<span class="badge">Built in</span>') + '</td>' +
+      '<td class="acts">' + (open && !s.hidden ? '<a class="btn small" href="' + esc(open) + '" target="_blank" rel="noopener">Open ↗</a>' : '') +
+      '<button class="btn small" data-pedit="' + esc(s.id) + '">Edit</button>' +
+      '<button class="btn small" data-preplace="' + esc(s.id) + '">Replace</button>' +
+      '<button class="btn small" data-phide="' + esc(s.id) + '">' + (s.hidden ? 'Show' : 'Hide') + '</button>' +
+      (s.edited ? '<button class="btn small danger" data-pundo="' + esc(s.id) + '">' + (s.builtIn ? 'Undo changes' : 'Remove') + '</button>' : '') + '</td></tr>';
+  }
+
+  function pickPage(file, expectId) {
+    S.flashP = '';
+    var reader = new FileReader();
+    reader.onload = function () {
+      var p = parseSpread(reader.result);
+      if (p.error) return showPageDraft({ error: file.name + ': ' + p.error });
+      if (expectId && p.id !== expectId) return showPageDraft({ error: file.name + ' is pages ' + p.label + ', not ' + expectId.replace(/-/g, '–') + '. Pick the file for ' + expectId.replace(/-/g, '–') + ', or add this one as its own pages.' });
+      if (p.code.length > MAX) return showPageDraft({ error: file.name + ' is too large (' + mb(p.code.length) + ').' });
+      p.name = file.name;
+      showPageDraft(p);
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function showPageDraft(d) {
+    S.draftPage = d;
+    var box = $('#pgPrev'); if (!box) return;
+    if (d.error) { box.innerHTML = '<div class="msg err">' + esc(d.error) + '</div>'; return; }
+    var c = mergedCfg(), ex = c.spreads.filter(function (s) { return s.id === d.id; })[0];
+    var guessObj = ex && ex.obj;
+    if (!guessObj) {  // the SLO of the nearest earlier pages
+      var best = null;
+      c.objectives.forEach(function (o) { (o.spreads || []).forEach(function (id) { if (firstPage(id) < firstPage(d.id) && (!best || firstPage(id) > firstPage(best.id))) best = { id: id, obj: o.id }; }); });
+      guessObj = best ? best.obj : '';
+    }
+    box.innerHTML = '<div class="preview"><dl class="facts"><dt>File</dt><dd>' + esc(d.name) + '</dd><dt>Pages</dt><dd><b>' + esc(d.label) + '</b></dd></dl>' +
+      (ex ? '<div class="msg info">These pages are already in the notebook. This <b>replaces</b> them. Ink stays.</div>' : '<div class="msg info">These are <b>new pages</b>.</div>') +
+      '<div class="row2"><div><label class="f" for="pgTitle">Title students see</label><input type="text" id="pgTitle" value="' + esc(ex ? ex.title || '' : '') + '" placeholder="e.g. Quadratic Formula"></div>' +
+      '<div><label class="f" for="pgObj">SLO</label><select id="pgObj">' + sloOptions(c, guessObj) + '</select></div></div>' +
+      '<div class="actions"><button class="btn primary" id="pgGo">' + (ex ? 'Replace pages' : 'Add pages') + '</button><button class="btn" id="pgCancel">Cancel</button></div><div id="pgMsg"></div></div>';
+    $('#pgCancel').onclick = function () { S.draftPage = null; box.innerHTML = ''; };
+    $('#pgGo').onclick = function () {
+      var title = $('#pgTitle').value.trim(), obj = $('#pgObj').value;
+      if (!title) { $('#pgMsg').innerHTML = '<div class="msg err">Give the pages a title.</div>'; $('#pgTitle').focus(); return; }
+      var form = $('#pageForm'); form.dataset.busy = '1';
+      var go = $('#pgGo'); go.disabled = true; go.textContent = 'Saving…';
+      var file = (ex && ex.uploaded && ex.file) || ('Spread_' + d.id.replace(/[^A-Za-z0-9]+/g, '_'));
+      var upd = {};
+      upd['files/' + safeKey(file)] = d.code;
+      upd['spreads/' + safeKey(d.id)] = { label: d.label, title: title, obj: obj, file: file, src: 'db', size: d.code.length, updated: firebase.database.ServerValue.TIMESTAMP };
+      db.ref('content').update(upd).then(function () {
+        form.dataset.busy = ''; S.draftPage = null;
+        var link = ORIGIN + '/?obj=' + encodeURIComponent(obj) + '&spread=' + encodeURIComponent(d.id);
+        S.flashP = '<div class="msg ok">Saved pages ' + esc(d.label) + '. Students see them now. Link: <a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(link) + '</a></div>';
+        render();
+      }).catch(function (err) {
+        form.dataset.busy = ''; go.disabled = false; go.textContent = ex ? 'Replace pages' : 'Add pages';
+        $('#pgMsg').innerHTML = '<div class="msg err">That didn\'t save: ' + esc(err.message || err) + '</div>';
+      });
+    };
+  }
+
+  function editPage(id, c) {
+    var s = c.spreads.filter(function (x) { return x.id === id; })[0] || { id: id };
+    var box = $('#pgPrev');
+    box.innerHTML = '<div class="preview"><h2 style="font-size:16px">Edit pages ' + esc(s.label || id) + '</h2>' +
+      '<div class="row2"><div><label class="f" for="edTitle">Title students see</label><input type="text" id="edTitle" value="' + esc(s.title || '') + '"></div>' +
+      '<div><label class="f" for="edObj">SLO</label><select id="edObj">' + sloOptions(c, s.obj) + '</select></div></div>' +
+      '<label class="f" for="edVid">Video links <span class="muted" style="font-weight:400">(optional, one per line; text after a link becomes its button label, like “p. 20”)</span></label>' +
+      '<textarea id="edVid" rows="3" spellcheck="false" placeholder="https://www.youtube.com/watch?v=… p. 20">' + esc(videosText(s.videos)) + '</textarea>' +
+      '<div class="actions"><button class="btn primary" id="edGo">Save</button><button class="btn" id="edCancel">Cancel</button></div><div id="edMsg"></div></div>';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('#edTitle').focus();
+    $('#edCancel').onclick = function () { box.innerHTML = ''; };
+    $('#edGo').onclick = function () {
+      var title = $('#edTitle').value.trim(), obj = $('#edObj').value;
+      if (!title) { $('#edMsg').innerHTML = '<div class="msg err">Give the pages a title.</div>'; return; }
+      var vids = parseVideos($('#edVid').value);
+      if (vids.bad.length) { $('#edMsg').innerHTML = '<div class="msg err">Each video line needs a link starting with https://. Check: ' + esc(vids.bad[0]) + '</div>'; return; }
+      S.flashP = '<div class="msg ok">Saved pages ' + esc(s.label || id) + '.</div>';
+      db.ref('content/spreads/' + safeKey(id)).update({ label: s.label || id.replace(/-/g, '–'), title: title, obj: obj, hidden: null, videos: vids.list.length ? vids.list : 'none' }).then(function () {
+        render();
+      }, function (err) { S.flashP = ''; if ($('#edMsg')) $('#edMsg').innerHTML = '<div class="msg err">That didn\'t save: ' + esc(err.message) + '</div>'; });
+    };
+  }
+})();
+</script>
+</body>
+</html>

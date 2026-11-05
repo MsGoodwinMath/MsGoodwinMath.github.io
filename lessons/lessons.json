@@ -1,0 +1,807 @@
+[
+ {
+  "slug": "square-root-property",
+  "file": "square-root-property.html",
+  "title": "Solving Using the Square Root Property",
+  "group": "3.2 Solving Quadratics",
+  "pages": "72–73",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "key-idea",
+    "t": "Key idea",
+    "p": "p. 72"
+   },
+   {
+    "v": "graph",
+    "t": "The graph",
+    "p": "p. 72"
+   },
+   {
+    "v": "algebraically",
+    "t": "Solve it algebraically",
+    "p": "p. 72"
+   },
+   {
+    "v": "steps",
+    "t": "The steps",
+    "p": "p. 73"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 73"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 73"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   }
+  ]
+ },
+ {
+  "slug": "solve-by-factoring",
+  "file": "solve-by-factoring.html",
+  "title": "Solving Quadratics by Factoring",
+  "group": "3.2 Solving Quadratics",
+  "pages": "74–75",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "key-idea",
+    "t": "Key idea",
+    "p": "p. 74"
+   },
+   {
+    "v": "try-it",
+    "t": "Try it",
+    "p": "p. 74"
+   },
+   {
+    "v": "steps",
+    "t": "The steps",
+    "p": "p. 75"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 75"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 75"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   }
+  ]
+ },
+ {
+  "slug": "factor-by-grouping",
+  "file": "factor-by-grouping.html",
+  "title": "Factor by Grouping",
+  "group": "3.1 Factoring",
+  "pages": "60–61",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "common-gcf",
+    "t": "Common GCF?",
+    "p": "p. 60"
+   },
+   {
+    "v": "split",
+    "t": "Split it in half",
+    "p": "p. 60"
+   },
+   {
+    "v": "factor-out",
+    "t": "Factor those out",
+    "p": "p. 60"
+   },
+   {
+    "v": "binomial",
+    "t": "Factor out the binomial",
+    "p": "p. 60"
+   },
+   {
+    "v": "steps",
+    "t": "The steps",
+    "p": "p. 61"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 61"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 61"
+   },
+   {
+    "v": "example-3",
+    "t": "Example 3",
+    "p": "p. 61"
+   },
+   {
+    "v": "watch-out",
+    "t": "Watch for these",
+    "p": "Review"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   },
+   {
+    "v": "practice-5",
+    "t": "Practice 5",
+    "p": "Practice 5"
+   },
+   {
+    "v": "practice-6",
+    "t": "Practice 6",
+    "p": "Practice 6"
+   }
+  ]
+ },
+ {
+  "slug": "factor-by-box-method",
+  "file": "factor-by-box-method.html",
+  "title": "Factor by Box Method",
+  "group": "3.1 Factoring",
+  "pages": "62–63",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "recall",
+    "t": "Recall: multiplying",
+    "p": "p. 62"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 62"
+   },
+   {
+    "v": "steps",
+    "t": "The steps",
+    "p": "p. 63"
+   },
+   {
+    "v": "box-map",
+    "t": "Where terms go",
+    "p": "p. 63"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 63"
+   },
+   {
+    "v": "swap",
+    "t": "Swap the middle?",
+    "p": "Extra"
+   },
+   {
+    "v": "watch-out",
+    "t": "Watch for these",
+    "p": "Review"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   },
+   {
+    "v": "practice-5",
+    "t": "Practice 5",
+    "p": "Practice 5"
+   },
+   {
+    "v": "practice-6",
+    "t": "Practice 6",
+    "p": "Practice 6"
+   }
+  ]
+ },
+ {
+  "slug": "factoring-trinomials",
+  "file": "factoring-trinomials.html",
+  "title": "Factoring Trinomials",
+  "group": "3.1 Factoring",
+  "pages": "64–65",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "format",
+    "t": "Three terms",
+    "p": "p. 64"
+   },
+   {
+    "v": "try-it",
+    "t": "Let's try it",
+    "p": "p. 64"
+   },
+   {
+    "v": "signs",
+    "t": "Sign rules",
+    "p": "p. 65"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 65"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 65"
+   },
+   {
+    "v": "watch-out",
+    "t": "Watch for these",
+    "p": "Review"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   },
+   {
+    "v": "practice-5",
+    "t": "Practice 5",
+    "p": "Practice 5"
+   },
+   {
+    "v": "practice-6",
+    "t": "Practice 6",
+    "p": "Practice 6"
+   }
+  ]
+ },
+ {
+  "slug": "factoring-trinomials-a-not-1",
+  "file": "factoring-trinomials-a-not-1.html",
+  "title": "Factoring Trinomials (a ≠ 1)",
+  "group": "3.1 Factoring",
+  "pages": "66–67",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "remember",
+    "t": "Remember",
+    "p": "p. 66"
+   },
+   {
+    "v": "method",
+    "t": "The X method",
+    "p": "p. 66"
+   },
+   {
+    "v": "the-x",
+    "t": "What the X looks like",
+    "p": "p. 66"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 67"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 67"
+   },
+   {
+    "v": "example-3",
+    "t": "Example 3",
+    "p": "p. 67"
+   },
+   {
+    "v": "example-4",
+    "t": "Example 4",
+    "p": "p. 67"
+   },
+   {
+    "v": "watch-out",
+    "t": "Watch for these",
+    "p": "Review"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   },
+   {
+    "v": "practice-5",
+    "t": "Practice 5",
+    "p": "Practice 5"
+   },
+   {
+    "v": "practice-6",
+    "t": "Practice 6",
+    "p": "Practice 6"
+   }
+  ]
+ },
+ {
+  "slug": "factoring-trinomials-methods",
+  "file": "factoring-trinomials-methods.html",
+  "title": "Factoring Trinomials (a ≠ 1): Bottoms Up and Guess-and-Check",
+  "group": "3.1 Factoring",
+  "pages": "68–69",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "bottoms-up",
+    "t": "Bottoms Up",
+    "p": "p. 68"
+   },
+   {
+    "v": "example-1",
+    "t": "Example: Bottoms Up",
+    "p": "p. 68"
+   },
+   {
+    "v": "guess-check",
+    "t": "Guess-and-Check",
+    "p": "p. 69"
+   },
+   {
+    "v": "example-2",
+    "t": "Example: Guess-and-Check",
+    "p": "p. 69"
+   },
+   {
+    "v": "watch-out",
+    "t": "Watch for these",
+    "p": "Review"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   },
+   {
+    "v": "practice-5",
+    "t": "Practice 5",
+    "p": "Practice 5"
+   },
+   {
+    "v": "practice-6",
+    "t": "Practice 6",
+    "p": "Practice 6"
+   }
+  ]
+ },
+ {
+  "slug": "difference-of-squares",
+  "file": "difference-of-squares.html",
+  "title": "Difference of Squares and Higher Order Polynomials",
+  "group": "3.1 Factoring",
+  "pages": "70–71",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "when",
+    "t": "When to use it",
+    "p": "p. 70"
+   },
+   {
+    "v": "pattern",
+    "t": "The pattern",
+    "p": "p. 70"
+   },
+   {
+    "v": "example-1",
+    "t": "Example 1",
+    "p": "p. 70"
+   },
+   {
+    "v": "example-2",
+    "t": "Example 2",
+    "p": "p. 70"
+   },
+   {
+    "v": "flowchart",
+    "t": "Higher order polynomials",
+    "p": "p. 71"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   }
+  ]
+ },
+ {
+  "slug": "rational-routine",
+  "file": "rational-routine.html",
+  "title": "Rational Equations: The Routine",
+  "group": "1.5 Rational Equations",
+  "pages": "34–35",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "rational",
+    "t": "What makes it rational?",
+    "p": "p. 34"
+   },
+   {
+    "v": "routine",
+    "t": "The 5-step routine",
+    "p": "p. 34"
+   },
+   {
+    "v": "level-1",
+    "t": "Level 1",
+    "p": "p. 35"
+   },
+   {
+    "v": "l1-example-1",
+    "t": "Example 1",
+    "p": "p. 35"
+   },
+   {
+    "v": "l1-example-2",
+    "t": "Example 2",
+    "p": "p. 35"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   }
+  ]
+ },
+ {
+  "slug": "rational-variable-denominators",
+  "file": "rational-variable-denominators.html",
+  "title": "Rational Equations: Variables in the Denominator",
+  "group": "1.5 Rational Equations",
+  "pages": "36–37",
+  "parts": [
+   {
+    "v": "welcome",
+    "t": "Welcome",
+    "p": "Start"
+   },
+   {
+    "v": "level-2",
+    "t": "Level 2: Key idea",
+    "p": "p. 36"
+   },
+   {
+    "v": "l2-example-1",
+    "t": "Example 1",
+    "p": "p. 36"
+   },
+   {
+    "v": "l2-example-2",
+    "t": "Example 2",
+    "p": "p. 36"
+   },
+   {
+    "v": "level-3",
+    "t": "Level 3: Key idea",
+    "p": "p. 37"
+   },
+   {
+    "v": "l3-example-1",
+    "t": "Example 1",
+    "p": "p. 37"
+   },
+   {
+    "v": "l3-example-2",
+    "t": "Example 2",
+    "p": "p. 37"
+   },
+   {
+    "v": "check-fails",
+    "t": "The check can fail!",
+    "p": "p. 37"
+   },
+   {
+    "v": "wrap-up",
+    "t": "Wrap-up",
+    "p": "Done"
+   },
+   {
+    "v": "practice",
+    "t": "How practice works",
+    "p": "Practice"
+   },
+   {
+    "v": "practice-1",
+    "t": "Practice 1",
+    "p": "Practice 1"
+   },
+   {
+    "v": "practice-2",
+    "t": "Practice 2",
+    "p": "Practice 2"
+   },
+   {
+    "v": "practice-3",
+    "t": "Practice 3",
+    "p": "Practice 3"
+   },
+   {
+    "v": "practice-4",
+    "t": "Practice 4",
+    "p": "Practice 4"
+   }
+  ]
+ }
+]
