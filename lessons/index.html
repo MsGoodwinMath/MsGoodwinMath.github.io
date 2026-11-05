@@ -130,7 +130,7 @@
 
       var css = doc.createElement('style');
       css.textContent =
-        '#hubLessonsBtn svg{width:14px;height:14px}' +
+        '#hubLessonsBtn svg{width:14px;height:14px}#hubHomeBtn{text-decoration:none;color:inherit}#hubHomeBtn svg{width:17px;height:17px}' +
         '.hubpop{position:fixed;z-index:60;top:52px;left:12px;width:min(460px,calc(100vw - 24px));max-height:min(78vh,640px);display:flex;flex-direction:column;' +
         'background:var(--paper,#fff);color:var(--ink,#222);border:1px solid var(--rule,#ddd);border-radius:14px;box-shadow:0 12px 34px rgba(30,20,60,.2);overflow:hidden}' +
         '.hubpop[hidden]{display:none}' +
@@ -159,7 +159,7 @@
         '.hubpop .none{padding:16px 10px;color:var(--muted,#666);font-size:.9rem}' +
         '.hubpop mark{background:#fff1a8;color:inherit;border-radius:3px;padding:0 1px}' +
         '#hubLessonsBtn .s2{display:none}' +
-        '@media (max-width:620px){#hubLessonsBtn .l{display:none}#hubLessonsBtn .s2{display:inline}}';
+        '@media (max-width:620px){#hubLessonsBtn .l{display:none}#hubLessonsBtn .s2{display:inline}#hubHomeBtn .l{display:none}}';
       doc.head.appendChild(css);
 
       var btn = doc.createElement('button');
@@ -168,6 +168,13 @@
       btn.innerHTML = '<span class="l">All lessons</span><span class="s2">Lessons</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
       btn.setAttribute('aria-label', 'All lessons');
       if (own) own.replaceWith(btn); else menu.insertAdjacentElement('afterend', btn);
+
+      // Home: back to the Class Hub (the site's front page)
+      var home = doc.createElement('a');
+      home.id = 'hubHomeBtn'; home.className = menu.className; home.href = '/'; home.target = '_top';
+      home.setAttribute('aria-label', 'Class Hub'); home.title = 'Back to the Class Hub';
+      home.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span class="l">Hub</span>';
+      menu.insertAdjacentElement('beforebegin', home);
 
       var pop = doc.createElement('div');
       pop.className = 'hubpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'All lessons'); pop.hidden = true;

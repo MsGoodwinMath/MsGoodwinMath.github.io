@@ -304,8 +304,9 @@
     app.innerHTML = '';
     var root = h('div', { class: 'nb' });
     var top = h('header', { class: 'topbar' });
-    var back = h('button', { class: 'iconbtn', title: 'Change period or objective', 'aria-label': 'Change period or objective' }, ICONS.back);
-    back.addEventListener('click', function () { flushNow(); S.spreadId = null; setUrl(); renderLanding(); });
+    var back = h('button', { class: 'homebtn', title: 'Back to the Class Hub', 'aria-label': 'Class Hub' },
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Hub</span>');
+    back.addEventListener('click', function () { flushNow(); S.spreadId = null; S.objective = null; setUrl(); renderLanding(); window.scrollTo(0, 0); });
     top.appendChild(back);
 
     var ctx = h('div', { class: 'ctx' });

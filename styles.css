@@ -150,6 +150,10 @@ button.chip:hover{border-color:var(--muted)}
 @media (max-width:480px){.hub-cards{grid-template-columns:1fr;padding:2px 12px 14px}.hub-btns{flex-direction:row}.hub-btn{flex:1}}
 
 /* ---------- Notebook ---------- */
+.homebtn{display:inline-flex;align-items:center;gap:6px;flex:none;border:1px solid color-mix(in srgb,var(--chrome-fg) 30%,transparent);background:transparent;color:var(--chrome-fg);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600}
+.homebtn svg{width:17px;height:17px}
+.homebtn:hover{background:color-mix(in srgb,var(--chrome-fg) 12%,transparent)}
+@media (max-width:720px){.homebtn span{display:none}.homebtn{padding:6px 7px}}
 .nb{height:100%;display:flex;flex-direction:column;overflow:hidden}
 .topbar{border-bottom:4px solid var(--unit,var(--accent));background:var(--chrome);color:var(--chrome-fg);display:flex;align-items:center;gap:10px 14px;padding:8px 12px;flex-wrap:wrap;min-height:54px;flex-shrink:0}
 .topbar .iconbtn{background:transparent;border:1px solid transparent;color:var(--chrome-fg);border-radius:8px;height:36px;min-width:36px;display:inline-grid;place-items:center;padding:0 8px}
