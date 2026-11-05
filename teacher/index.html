@@ -190,7 +190,14 @@
     S.hostedLessons.forEach(function (l) { map[l.slug] = { slug: l.slug, title: l.title, group: l.group, pages: l.pages, builtIn: true }; });
     Object.keys(S.dbLessons).forEach(function (slug) {
       var e = S.dbLessons[slug] || {}, cur = map[slug] || { slug: slug, builtIn: false };
-      if (e.title) { cur.title = e.title; cur.group = e.group; cur.pages = e.pages; cur.uploaded = e.updated || 1; cur.size = e.size; }
+      if (e.size) { cur.title = e.title || slug; cur.group = e.group; cur.pages = e.pages; cur.uploaded = e.updated || 1; cur.size = e.size; }
+      else if (cur.builtIn) {
+        if (e.title) cur.title = e.title;
+        if (e.group) cur.group = e.group;
+        if (e.pages != null) cur.pages = e.pages;
+        if (e.override) cur.edited = true;
+      }
+      cur.spread = e.spread || '';
       cur.hidden = !!e.hidden;
       if (cur.title) map[slug] = cur;
     });
@@ -303,7 +310,7 @@
   function renderLessons(draft) {
     var panel = $('#panel'), list = allLessons();
     var html = '<section class="card" id="lessonForm"><h2>Add or replace a lesson</h2>' +
-      '<p class="muted">Pick the lesson\'s <b>.html</b> file. If a lesson already uses that link name, the new file replaces it and the link stays the same.</p>' +
+      '<p class="muted">Pick the lesson\'s <b>.html</b> file. You can change its title, SLO and which notebook card it shows on before uploading. If a lesson already uses that link name, the new file replaces it and the link stays the same.</p>' +
       dropZone('les', '.html,.htm,text/html', '<b>Choose a lesson file</b> or drop it here') +
       '<div id="lesPrev"></div></section>';
     html += '<section class="card"><h2>All lessons</h2><p class="note">“Uploaded” lessons came from this hub. “Built in” lessons came with the site.</p>';
@@ -315,12 +322,14 @@
       html += '<tr class="' + (l.hidden ? 'hidden' : '') + '"><td class="pg">' + (l.pages ? 'p. ' + esc(l.pages) : '—') + '</td>' +
         '<td>' + esc(l.title) + '<br><span class="link">?lesson=' + esc(l.slug) + '</span></td>' +
         '<td class="hide-sm">' + (l.hidden ? '<span class="badge hid">Hidden</span> ' : '') +
-          (l.uploaded ? '<span class="badge mine">Uploaded ' + esc(when(l.uploaded)) + '</span>' : '<span class="badge">Built in</span>') + '</td>' +
+          (l.uploaded ? '<span class="badge mine">Uploaded ' + esc(when(l.uploaded)) + '</span>' : l.edited ? '<span class="badge mine">Edited</span>' : '<span class="badge">Built in</span>') + '</td>' +
         '<td class="acts"><a class="btn small" href="' + esc(link) + '" target="_blank" rel="noopener">Open ↗</a>' +
           '<button class="btn small" data-copy="' + esc(link) + '">Copy link</button>' +
+          '<button class="btn small" data-ledit="' + esc(l.slug) + '">Edit</button>' +
           '<button class="btn small" data-replace="' + esc(l.slug) + '">Replace</button>' +
           '<button class="btn small" data-hide="' + esc(l.slug) + '">' + (l.hidden ? 'Show' : 'Hide') + '</button>' +
-          (l.uploaded ? '<button class="btn small danger" data-del="' + esc(l.slug) + '">' + (l.builtIn ? 'Undo upload' : 'Delete') + '</button>' : '') +
+          (l.uploaded ? '<button class="btn small danger" data-del="' + esc(l.slug) + '">' + (l.builtIn ? 'Undo upload' : 'Delete') + '</button>'
+            : l.edited ? '<button class="btn small danger" data-del="' + esc(l.slug) + '">Undo changes</button>' : '') +
         '</td></tr>';
     });
     if (grp !== null) html += '</tbody></table>';
@@ -335,17 +344,24 @@
         input.click();
       };
     });
+    panel.querySelectorAll('[data-ledit]').forEach(function (b) {
+      b.onclick = function () {
+        var l = list.filter(function (x) { return x.slug === b.dataset.ledit; })[0];
+        showLessonDraft({ edit: true, slug: l.slug, name: '', info: { title: l.title, group: l.group, pages: l.pages || '', spread: l.spread || '' }, uploaded: !!l.uploaded });
+        $('#lesPrev').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+    });
     panel.querySelectorAll('[data-hide]').forEach(function (b) {
       b.onclick = function () {
         var slug = b.dataset.hide, e = S.dbLessons[slug] || {};
-        if (e.hidden) { if (e.title) db.ref('content/lessons/' + slug + '/hidden').remove(); else db.ref('content/lessons/' + slug).remove(); }
+        if (e.hidden) { if (e.size || e.override) db.ref('content/lessons/' + slug + '/hidden').remove(); else db.ref('content/lessons/' + slug).remove(); }
         else db.ref('content/lessons/' + slug + '/hidden').set(true);
       };
     });
     panel.querySelectorAll('[data-del]').forEach(function (b) {
       b.onclick = function () {
         var slug = b.dataset.del, l = list.filter(function (x) { return x.slug === slug; })[0];
-        var ask = l.builtIn ? 'Undo your upload of "' + l.title + '"? Students will see the built-in version again.' : 'Delete "' + l.title + '"? Its link will stop working.';
+        var ask = l.builtIn ? 'Undo your changes to "' + l.title + '"? Students will see the built-in version again.' : 'Delete "' + l.title + '"? Its link will stop working.';
         if (!confirm(ask)) return;
         b.disabled = true;
         var upd = {}; upd['lessons/' + slug] = null; upd['lessonFiles/' + slug] = null;
@@ -369,51 +385,90 @@
     reader.readAsText(file, 'utf-8');
   }
 
+  /* SLO + notebook card choices for a lesson */
+  function objIdOf(group) { var m = String(group || '').match(/^(\d+\.\d+)/); return m ? m[1] : ''; }
+  function lessonFieldsHtml(info) {
+    var c = mergedCfg(), oid = objIdOf(info.group);
+    var cards = '<option value="">Automatic: match by notebook pages</option>';
+    c.objectives.forEach(function (o) {
+      var ids = o.spreads || []; if (!ids.length) return;
+      cards += '<optgroup label="' + esc(objLabel(o)) + '">';
+      ids.forEach(function (id) {
+        var sp = c.spreads.filter(function (x) { return x.id === id; })[0] || { id: id, label: id };
+        var lab = (/^\d/.test(sp.label || id) ? 'pp. ' : '') + (sp.label || id) + (sp.title ? ' · ' + sp.title : '');
+        cards += '<option value="' + esc(id) + '"' + (info.spread === id ? ' selected' : '') + '>' + esc(lab) + '</option>';
+      });
+      cards += '</optgroup>';
+    });
+    return '<div class="row2"><div><label class="f" for="lfTitle">Title students see</label><input type="text" id="lfTitle" value="' + esc(info.title || '') + '"></div>' +
+      '<div><label class="f" for="lfObj">SLO</label><select id="lfObj"><option value="">(none: put under “More lessons”)</option>' + sloOptions(c, oid) + '</select></div></div>' +
+      '<div class="row2"><div><label class="f" for="lfCard">Show it on this notebook card</label><select id="lfCard">' + cards + '</select></div>' +
+      '<div><label class="f" for="lfPages">Notebook pages <span class="muted" style="font-weight:400">(optional, like 72–73)</span></label><input type="text" id="lfPages" value="' + esc(info.pages || '') + '"></div></div>' +
+      '<p class="note">The lesson’s <b>Video / Slides</b> button goes on the card you pick. “Automatic” uses the notebook pages.</p>';
+  }
+  function readLessonFields(orig) {
+    var c = mergedCfg(), oid = $('#lfObj').value, o = c.objectives.filter(function (x) { return x.id === oid; })[0];
+    var group = !oid ? 'More lessons' : (objIdOf(orig.group) === oid ? orig.group : oid + ' ' + (o ? o.name : ''));
+    var spread = $('#lfCard').value;
+    var pages = $('#lfPages').value.trim().replace(/\s*-\s*/, '–');
+    if (!pages && spread && /^\d/.test(spread)) pages = spread.replace('-', '–');
+    if (spread && !oid) { c.objectives.forEach(function (x) { if ((x.spreads || []).indexOf(spread) >= 0 && !oid) { oid = x.id; group = x.id + ' ' + x.name; } }); }
+    return { title: $('#lfTitle').value.trim(), group: group, pages: pages, spread: spread };
+  }
+
   function showLessonDraft(d) {
     S.draftLesson = d;
     var box = $('#lesPrev'); if (!box) return;
     if (d.error) { box.innerHTML = '<div class="msg err">' + esc(d.error) + '</div>'; return; }
     var list = allLessons();
-    var html = '<div class="preview"><dl class="facts">' +
-      '<dt>File</dt><dd>' + esc(d.name) + ' (' + mb(d.text.length) + ')</dd>' +
-      '<dt>Title</dt><dd>' + esc(d.info.title || '(no title in the file)') + '</dd>' +
-      '<dt>Group</dt><dd>' + esc(d.info.group) + '</dd>' +
-      '<dt>Notebook pages</dt><dd>' + esc(d.info.pages || '—') + '</dd>' +
-      '<dt>Parts</dt><dd>' + d.info.parts.length + '</dd></dl>' +
-      '<label class="f" for="lesSlug">Link name</label><input type="text" id="lesSlug" value="' + esc(d.slug) + '" spellcheck="false">' +
-      '<p class="note" id="lesLink"></p><div id="lesWhat"></div>' +
-      '<div class="actions"><button class="btn primary" id="lesGo">Upload lesson</button><button class="btn" id="lesCancel">Cancel</button></div><div id="lesMsg"></div></div>';
+    var html = '<div class="preview">' + (d.edit ? '<h2 style="font-size:16px">Edit “' + esc(d.info.title) + '”</h2>'
+        : '<dl class="facts"><dt>File</dt><dd>' + esc(d.name) + ' (' + mb(d.text.length) + ', ' + d.info.parts.length + ' parts)</dd></dl>') +
+      lessonFieldsHtml(d.info) +
+      (d.edit ? '<p class="note">Link: <span class="link">' + esc(ORIGIN + '/lessons/?lesson=' + d.slug) + '</span></p>'
+        : '<label class="f" for="lesSlug">Link name</label><input type="text" id="lesSlug" value="' + esc(d.slug) + '" spellcheck="false">' +
+          '<p class="note" id="lesLink"></p><div id="lesWhat"></div>') +
+      '<div class="actions"><button class="btn primary" id="lesGo">' + (d.edit ? 'Save' : 'Upload lesson') + '</button><button class="btn" id="lesCancel">Cancel</button></div><div id="lesMsg"></div></div>';
     box.innerHTML = html;
-    var slugIn = $('#lesSlug');
-    function upd() {
-      var slug = slugIn.value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+/, '');
-      if (slug !== slugIn.value) slugIn.value = slug;
-      d.slug = slug;
-      var link = ORIGIN + '/lessons/?lesson=' + slug;
-      $('#lesLink').innerHTML = 'Students will use <span class="link">' + esc(link) + '</span>';
-      var ex = list.filter(function (l) { return l.slug === slug; })[0];
-      $('#lesWhat').innerHTML = ex ? '<div class="msg info">This <b>replaces</b> “' + esc(ex.title) + '”. The link stays the same.</div>'
-        : '<div class="msg info">This is a <b>new lesson</b>.</div>';
-      $('#lesGo').disabled = !slug;
-    }
-    slugIn.oninput = upd; upd();
     $('#lesCancel').onclick = function () { S.draftLesson = null; S.flashL = ''; box.innerHTML = ''; };
+    var slugIn = $('#lesSlug');
+    if (slugIn) {
+      var upd = function () {
+        var slug = slugIn.value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+/, '');
+        if (slug !== slugIn.value) slugIn.value = slug;
+        d.slug = slug;
+        $('#lesLink').innerHTML = 'Students will use <span class="link">' + esc(ORIGIN + '/lessons/?lesson=' + slug) + '</span>';
+        var ex = list.filter(function (l) { return l.slug === slug; })[0];
+        $('#lesWhat').innerHTML = ex ? '<div class="msg info">This <b>replaces</b> “' + esc(ex.title) + '”. The link stays the same.</div>'
+          : '<div class="msg info">This is a <b>new lesson</b>.</div>';
+        $('#lesGo').disabled = !slug;
+      };
+      slugIn.oninput = upd; upd();
+    }
     $('#lesGo').onclick = function () {
+      var f = readLessonFields(d.info);
+      if (!f.title) { $('#lesMsg').innerHTML = '<div class="msg err">Give the lesson a title.</div>'; $('#lfTitle').focus(); return; }
       var slug = d.slug.replace(/-+$/, ''); if (!slug) return;
       var form = $('#lessonForm'); form.dataset.busy = '1';
-      var go = $('#lesGo'); go.disabled = true; go.textContent = 'Uploading ' + mb(d.text.length) + '…';
-      var info = d.info;
-      db.ref('content/lessonFiles/' + slug).set(d.text).then(function () {
-        return db.ref('content/lessons/' + slug).set({ title: info.title || slug, group: info.group, pages: info.pages, parts: info.parts,
-          size: d.text.length, file: d.name, updated: firebase.database.ServerValue.TIMESTAMP });
-      }).then(function () {
+      var go = $('#lesGo'); go.disabled = true; go.textContent = d.edit ? 'Saving…' : 'Uploading ' + mb(d.text.length) + '…';
+      var link = ORIGIN + '/lessons/?lesson=' + slug;
+      var job;
+      if (d.edit) {
+        var upd2 = { title: f.title, group: f.group, pages: f.pages, spread: f.spread || null, updatedInfo: firebase.database.ServerValue.TIMESTAMP };
+        if (!d.uploaded) upd2.override = true;
+        job = db.ref('content/lessons/' + slug).update(upd2);
+      } else {
+        job = db.ref('content/lessonFiles/' + slug).set(d.text).then(function () {
+          return db.ref('content/lessons/' + slug).set({ title: f.title, group: f.group, pages: f.pages, spread: f.spread || null, parts: d.info.parts,
+            size: d.text.length, file: d.name, updated: firebase.database.ServerValue.TIMESTAMP });
+        });
+      }
+      job.then(function () {
         form.dataset.busy = ''; S.draftLesson = null;
-        var link = ORIGIN + '/lessons/?lesson=' + slug;
-        S.flashL = '<div class="msg ok">Uploaded “' + esc(info.title || slug) + '”. Students see it now at <a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(link) + '</a>.</div>';
+        S.flashL = '<div class="msg ok">' + (d.edit ? 'Saved' : 'Uploaded') + ' “' + esc(f.title) + '”. Students see it now at <a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(link) + '</a>.</div>';
         render();
       }).catch(function (err) {
-        form.dataset.busy = ''; go.disabled = false; go.textContent = 'Upload lesson';
-        $('#lesMsg').innerHTML = '<div class="msg err">The upload didn\'t finish: ' + esc(err.message || err) + '</div>';
+        form.dataset.busy = ''; go.disabled = false; go.textContent = d.edit ? 'Save' : 'Upload lesson';
+        $('#lesMsg').innerHTML = '<div class="msg err">That didn\'t save: ' + esc(err.message || err) + '</div>';
       });
     };
   }

@@ -83,9 +83,14 @@
     var list = (r[0] || []).map(function (l) { return { slug: l.slug, title: l.title, group: l.group, pages: l.pages }; }), extra = r[1] || {};
     Object.keys(extra).forEach(function (slug) {
       var e = extra[slug] || {};
+      var base0 = list.filter(function (l) { return l.slug === slug; })[0];
       list = list.filter(function (l) { return l.slug !== slug; });
-      if (!e.hidden && e.title) list.push({ slug: slug, title: e.title, group: e.group || '', pages: e.pages || '' });
-      else if (e.hidden) list = list.filter(function (l) { return l.slug !== slug; });
+      if (e.hidden) return;
+      var l = e.size ? { slug: slug, title: e.title || slug, group: e.group || '', pages: e.pages || '' } : base0;
+      if (!l) return;
+      if (!e.size) { if (e.title) l.title = e.title; if (e.group) l.group = e.group; if (e.pages != null) l.pages = e.pages; }
+      if (e.spread) l.spread = e.spread;
+      list.push(l);
     });
     return list;
   });

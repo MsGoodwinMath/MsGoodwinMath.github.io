@@ -226,7 +226,8 @@
       if (!mine.length) box.appendChild(h('p', { class: 'hub-empty' }, 'Nothing here yet. Check back later in the year.'));
       mine.forEach(function (o) {
         var sp = o.spreads || [];
-        var own = lessons.filter(function (l) { return String(l.group || '').indexOf(o.id + ' ') === 0; });
+        var pinned = function (l) { return l.spread && CFG.spreads && CFG.spreads.some(function (x) { return x.id === l.spread; }); };
+        var own = lessons.filter(function (l) { return String(l.group || '').indexOf(o.id + ' ') === 0 && !pinned(l); });
         var card = h('details', { class: 'hub-slo' + (sp.length || own.length ? '' : ' is-empty') });
         var okey = 'o' + o.id;
         if (openUnits[okey]) card.open = true;
@@ -237,7 +238,8 @@
         var used = {};
         var rows = sp.map(function (sid) {
           var m = spreadMeta(sid), r = rangeOf(m.label || sid);
-          var l = lessons.filter(function (x) { return !used[x.slug] && overlaps(rangeOf(x.pages), r) ; })[0];
+          var l = lessons.filter(function (x) { return x.spread === sid; })[0] ||
+            lessons.filter(function (x) { return !used[x.slug] && !pinned(x) && overlaps(rangeOf(x.pages), r); })[0];
           if (l) used[l.slug] = 1;
           return { sid: sid, m: m, lesson: l };
         });

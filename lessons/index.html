@@ -51,9 +51,17 @@
       var list = (base || []).slice();
       Object.keys(extra || {}).forEach(function (slug) {
         var e = extra[slug] || {};
+        var base0 = list.filter(function (l) { return l.slug === slug; })[0];
         list = list.filter(function (l) { return l.slug !== slug; });
-        if (e.hidden || !e.title) return;
-        list.push({ slug: slug, title: e.title, group: e.group || 'More lessons', pages: e.pages || '', parts: e.parts || [], src: 'db' });
+        if (e.hidden) return;
+        if (e.size) { list.push({ slug: slug, title: e.title || slug, group: e.group || 'More lessons', pages: e.pages || '', parts: e.parts || [], src: 'db', spread: e.spread || '' }); return; }
+        if (base0) {   // a built-in lesson with edited details
+          if (e.title) base0.title = e.title;
+          if (e.group) base0.group = e.group;
+          if (e.pages != null) base0.pages = e.pages;
+          if (e.spread) base0.spread = e.spread;
+          list.push(base0);
+        }
       });
       var unit = function (g) { var n = parseFloat(g); return isNaN(n) ? -1 : n; };
       var groups = [];
@@ -99,11 +107,12 @@
     /* The class notebook spread that holds a lesson's first page, e.g. "/?obj=3.2&spread=72-73". */
     function notebookLink(l) {
       var r = pageRange(l && l.pages), cfg = NB_CONFIG;
-      if (!r || !cfg || !cfg.spreads || !cfg.objectives) return null;
-      var sp = null;
+      if (!cfg || !cfg.spreads || !cfg.objectives) return null;
+      var sp = l && l.spread ? cfg.spreads.filter(function (x) { return x.id === l.spread; })[0] || null : null;
+      if (!sp && !r) return null;
       cfg.spreads.forEach(function (s) {
         var m = String(s.id).match(/^(\d+)(?:-(\d+))?$/);
-        if (m && !sp && r[0] >= +m[1] && r[0] <= +(m[2] || m[1])) sp = s;
+        if (m && !sp && r && r[0] >= +m[1] && r[0] <= +(m[2] || m[1])) sp = s;
       });
       if (!sp) return null;
       var obj = null;
@@ -192,7 +201,7 @@
       var cur0 = LESSONS.filter(function (l) { return l.slug === LESSON_FILE; })[0], nb = notebookLink(cur0);
       var nbRow = '<div class="row"><a class="go" href="/" target="_top"><span class="pg">⌂</span><span>Class hub</span></a></div>' +
         '<div class="row nbrow"><a class="go" href="' + (nb ? esc(nb.href) : '/') + '" target="_top">' +
-        '<span class="pg">' + (nb ? 'p. ' + esc(nb.label) : '📓') + '</span><span>' + (nb ? 'Class notes for this lesson' : 'Class notebook') + '</span></a></div>';
+        '<span class="pg">' + (nb ? (/^\d/.test(nb.label) ? 'p. ' : '') + esc(nb.label) : '📓') + '</span><span>' + (nb ? 'Class notes for this lesson' : 'Class notebook') + '</span></a></div>';
       function partPage(p) { return /^p\.\s*\d/.test(p.p || '') ? p.p : ''; }
 
       function render() {
