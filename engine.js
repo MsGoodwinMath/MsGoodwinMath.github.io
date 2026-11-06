@@ -139,6 +139,8 @@
      LANDING: pick period, then objective
      ===================================================================== */
   function stopLive() { if (S.unsub) { try { S.unsub(); } catch (e) {} S.unsub = null; } }
+  /* ---------------- Class Hub: a notebook with unit tabs ----------------
+     Cover (title + class period) -> unit contents (SLOs) -> SLO page (page sets with Video and Live notes). */
   function renderLanding() {
     S.gen++; stopLive();
     var app = $('#app');
@@ -147,135 +149,181 @@
     var lessonBase = BOOT.lessonBase || '';
     var rangeOf = function (t) { var m = String(t || '').match(/(\d+)(?:\s*[–-]\s*(\d+))?/); return m ? [+m[1], +(m[2] || m[1])] : null; };
     var overlaps = function (a, b) { return a && b && a[0] <= b[1] && b[0] <= a[1]; };
-    var openUnits = {}; try { openUnits = JSON.parse(store('nb.openUnits') || '{}') || {}; } catch (e) {}
-
-    var html = '<main class="landing hub"><div class="landing-inner">' +
-      '<header class="land-head">' +
-      '<span class="eyebrow">Algebra 3/4</span>' +
-      '<h1>' + esc(CFG.hubTitle || 'Class Hub') + '</h1>' +
-      '<p>' + (teacher ? 'Pick the class you are teaching, then open an SLO. Your ink is saved separately for each period.'
-        : 'Pick your class period, then open a unit. Each SLO has the lesson video and the live notes from class.') + '</p>' +
-      (teacher ? '<span class="who"><span class="dot"></span><b>Teacher view</b>' + (BOOT.email ? ' · ' + esc(BOOT.email) : '') + '</span>' : '') +
-      '</header>' +
-      '<section class="hub-period" id="hubPeriod"><h2 id="periodLbl">' + (teacher ? 'Class I\'m teaching' : 'My class period') + '</h2>' +
-      '<div class="hub-periods" role="group" aria-labelledby="periodLbl" id="periodGrid"></div>' +
-      (S.pending ? '<p class="pending-note" id="pendingNote">Pick your class period to open the live notes for <b>' + esc(pagesLabel(spreadMeta(S.pending.sid))) + '</b>.</p>' : '') +
-      '</section>' +
-      '<div class="obj-list" id="objList"></div>' +
-      (api.demo ? '<div class="demo-bar"><span>Preview mode. Try both sides:</span><div class="seg" id="roleSeg">' +
-        '<button data-role="teacher" aria-pressed="' + teacher + '">Teacher</button><button data-role="student" aria-pressed="' + !teacher + '">Student</button></div></div>' : '') +
-      '<div id="landingFooter"></div></div></main>';
-    app.innerHTML = html;
-
-    var grid = $('#periodGrid');
-    periods().forEach(function (p) {
-      var b = h('button', { class: 'hub-pbtn', 'aria-pressed': String(S.period === p.id) },
-        '<span class="big">' + esc(p.short || p.name) + '</span><span class="small">' + esc(p.name) + '</span>');
-      b.addEventListener('click', function () {
-        S.period = p.id; store('nb.period', p.id);
-        if (S.pending) { var go = S.pending; S.pending = null; openNotebook(S.period, go.oid, go.sid); return; }
-        grid.querySelectorAll('.hub-pbtn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-      });
-      grid.appendChild(b);
-    });
-
-    function liveNotes(oid, sid) {
-      if (S.period) { openNotebook(S.period, oid, sid); return; }
-      S.pending = { oid: oid, sid: sid };
-      var sec = $('#hubPeriod'), note = $('#pendingNote');
-      if (!note) { note = h('p', { class: 'pending-note', id: 'pendingNote' }); sec.appendChild(note); }
-      note.innerHTML = 'Pick your class period to open the live notes for <b>' + esc(pagesLabel(spreadMeta(sid))) + '</b>.';
-      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      sec.classList.remove('nudge'); void sec.offsetWidth; sec.classList.add('nudge');
-      var first = grid.querySelector('button'); if (first) setTimeout(function () { first.focus({ preventScroll: true }); }, 350);
-    }
-    function videoBtn(l) {
-      return lessonBase ? '<a class="hub-btn video" href="' + esc(lessonBase + encodeURIComponent(l.slug)) + '" title="' + esc(l.title) + '">' +
-        '<span class="ic" aria-hidden="true">▶</span>Video / Slides</a>' : '';
-    }
-    function ytBtns(list) {
-      list = (list || []).filter(function (v) { return v && /^https:\/\//.test(v.url || ''); });
-      return list.map(function (v) {
-        var text = list.length > 1 ? 'Video ' + (v.label || '') : 'Video';
-        return '<a class="hub-btn video yt" href="' + esc(v.url) + '" target="_blank" rel="noopener" title="' + esc(v.label || 'Video') + ' (opens YouTube)">' +
-          '<span class="ic" aria-hidden="true">▶</span>' + esc(text.trim()) + '</a>';
-      }).join('');
-    }
-    var NOTES_IC = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8M7 11l3-3 2 2 4-4"/></svg>';
-
-    var list = $('#objList');
+    var pinned = function (l) { return l.spread && (CFG.spreads || []).some(function (x) { return x.id === l.spread; }); };
     var objs = objectives();
+
+    // Tabs: every unit in the settings, plus "More" when some objectives have no unit.
     var units = (CFG.units || []).slice();
-    if (objs.some(function (o) { return !o.unit; })) units.push({ id: '', name: teacher ? 'Teacher only' : 'More' });
-    var lastSem = null;
-    units.forEach(function (u) {
-      var mine = objs.filter(function (o) { return (o.unit || '') === u.id; });
-      var uLessons = lessons.filter(function (l) { var m = String(l.group || '').match(/^(\d+)\./); return m && m[1] === String(u.id); });
-      if (!mine.length && !/^\d+$/.test(String(u.id))) return;
-      var ready = mine.filter(function (o) {
-        return (o.spreads || []).length || lessons.some(function (l) { return String(l.group || '').indexOf(o.id + ' ') === 0; });
-      }).length;
-      if (u.semester && u.semester !== lastSem) { list.appendChild(h('h3', { class: 'sem' }, 'Semester ' + esc(u.semester))); lastSem = u.semester; }
-      var key = 'u' + u.id;
-      var det = h('details', { class: 'unit hub-unit' + (ready ? '' : ' is-empty'), style: u.color ? '--u:' + u.color : null });
-      if (openUnits[key]) det.open = true;
-      det.addEventListener('toggle', function () { openUnits[key] = det.open || undefined; store('nb.openUnits', JSON.stringify(openUnits)); });
-      det.appendChild(h('summary', null, '<span class="uname">' + esc(u.name) + '</span><span class="ucount">' +
-        (ready ? ready + (ready === 1 ? (isSlo(mine[0]) ? ' SLO' : ' section') : (mine.some(isSlo) ? ' SLOs' : ' sections')) : 'Coming soon') + '</span>'));
-      var box = h('div', { class: 'unit-slos' });
-      if (!mine.length) box.appendChild(h('p', { class: 'hub-empty' }, 'Nothing here yet. Check back later in the year.'));
-      mine.forEach(function (o) {
-        var sp = o.spreads || [];
-        var pinned = function (l) { return l.spread && CFG.spreads && CFG.spreads.some(function (x) { return x.id === l.spread; }); };
-        var own = lessons.filter(function (l) { return String(l.group || '').indexOf(o.id + ' ') === 0 && !pinned(l); });
-        var card = h('details', { class: 'hub-slo' + (sp.length || own.length ? '' : ' is-empty') });
-        var okey = 'o' + o.id;
-        if (openUnits[okey]) card.open = true;
-        card.addEventListener('toggle', function () { openUnits[okey] = card.open || undefined; store('nb.openUnits', JSON.stringify(openUnits)); });
-        var summ = h('summary', null, '');
-        card.appendChild(summ);
-        var cards = h('div', { class: 'hub-cards' });
-        var used = {};
-        var rows = sp.map(function (sid) {
-          var m = spreadMeta(sid), r = rangeOf(m.label || sid);
-          var l = lessons.filter(function (x) { return x.spread === sid; })[0] ||
-            lessons.filter(function (x) { return !used[x.slug] && !pinned(x) && overlaps(rangeOf(x.pages), r); })[0];
-          if (l) used[l.slug] = 1;
-          return { sid: sid, m: m, lesson: l };
-        });
-        own.forEach(function (l) { if (!used[l.slug]) rows.push({ lesson: l, m: { label: l.pages, title: l.title } }); });
-        var at = function (r) { return r.m.sort != null ? +r.m.sort : (rangeOf(r.m.label) || [9999])[0]; };
-        rows.sort(function (a, b) { return at(a) - at(b); });
-        var nVid = rows.filter(function (r) { return r.lesson || (r.m.videos || []).length; }).length;
-        summ.innerHTML = (isSlo(o) ? '<span class="slo">' + esc(o.id) + '</span>' : '') + '<span class="name">' + esc(o.name) + '</span>' +
-          (o.teacherOnly ? ' <span class="chip teacher-only">teacher only</span>' : '') +
-          '<span class="ocount">' + (rows.length ? rows.length + (rows.length === 1 ? ' page set' : ' page sets') + (nVid ? ' · ' + nVid + (nVid === 1 ? ' video' : ' videos') : '') : 'Coming soon') + '</span>';
-        if (!rows.length) cards.appendChild(h('p', { class: 'hub-empty' }, 'Nothing here yet.'));
-        rows.forEach(function (row) {
-          var r = h('div', { class: 'hub-card' });
+    if (objs.some(function (o) { return !o.unit; })) units.push({ id: '', name: teacher ? 'Teacher only' : 'More', short: '★' });
+    var unitObjs = function (u) { return objs.filter(function (o) { return (o.unit || '') === u.id; }); };
+    var unitById = function (id) { return units.filter(function (u) { return u.id === id; })[0]; };
+    var tabLabel = function (u) { return u.short || (/^\d+$/.test(String(u.id)) ? 'Unit ' + u.id : String(u.name || '').replace(/^Unit\s*/i, '').split(/\s+/)[0]); };
+    var unitTitle = function (u) { return String(u.name || '').replace(/^Unit\s*\d+\s*[-–:·]\s*/i, ''); };
+
+    function rowsFor(o) {
+      var sp = o.spreads || [], used = {};
+      var own = lessons.filter(function (l) { return String(l.group || '').indexOf(o.id + ' ') === 0 && !pinned(l); });
+      var rows = sp.map(function (sid) {
+        var m = spreadMeta(sid), r = rangeOf(m.label || sid);
+        var l = lessons.filter(function (x) { return x.spread === sid; })[0] ||
+          lessons.filter(function (x) { return !used[x.slug] && !pinned(x) && overlaps(rangeOf(x.pages), r); })[0];
+        if (l) used[l.slug] = 1;
+        return { sid: sid, m: m, lesson: l };
+      });
+      own.forEach(function (l) { if (!used[l.slug]) rows.push({ lesson: l, m: { label: l.pages, title: l.title } }); });
+      var at = function (r) { return r.m.sort != null ? +r.m.sort : (rangeOf(r.m.label) || [9999])[0]; };
+      rows.sort(function (a, b) { return at(a) - at(b); });
+      return rows;
+    }
+    var ready = function (o) { return rowsFor(o).length > 0; };
+
+    // Where to open: the remembered unit/SLO, else the newest unit that has anything in it.
+    if (S.hubUnit != null && !unitById(S.hubUnit)) S.hubUnit = null;
+    if (S.hubUnit == null && S.hubOpen) {
+      var latest = null;
+      units.forEach(function (u) { if (/^\d+$/.test(String(u.id)) && unitObjs(u).some(ready)) latest = u; });
+      S.hubUnit = latest ? latest.id : (units[0] && units[0].id);
+    }
+
+    var periodBtns = function (cls) {
+      return periods().map(function (p) {
+        return '<button type="button" class="' + cls + '" data-period="' + esc(p.id) + '" aria-pressed="' + (S.period === p.id) + '">' +
+          '<span class="big">' + esc(p.short || p.name) + '</span>' + (cls === 'cv-pbtn' ? '<span class="small">' + esc(p.name) + '</span>' : '') + '</button>';
+      }).join('');
+    };
+    var tabsHtml = function (current) {
+      return '<nav class="nbtabs" aria-label="Units">' + units.map(function (u) {
+        var any = unitObjs(u).some(ready);
+        return '<button type="button" class="nbtab' + (any ? '' : ' empty') + '" data-unit="' + esc(u.id) + '" style="--u:' + esc(u.color || '#e9edf3') + '"' +
+          (current === u.id ? ' aria-current="page"' : '') + ' title="' + esc(u.name) + '"><span>' + esc(tabLabel(u)) + '</span></button>';
+      }).join('') + '</nav>';
+    };
+    var footer = (api.demo ? '<div class="demo-bar"><span>Preview mode. Try both sides:</span><div class="seg" id="roleSeg">' +
+        '<button data-role="teacher" aria-pressed="' + teacher + '">Teacher</button><button data-role="student" aria-pressed="' + !teacher + '">Student</button></div></div>' : '') +
+      '<div id="landingFooter"></div>';
+    var pendingNote = function () {
+      return S.pending ? '<p class="pending-note" id="pendingNote">Pick your class period to open the live notes for <b>' + esc(pagesLabel(spreadMeta(S.pending.sid))) + '</b>.</p>' : '';
+    };
+
+    /* ---------- the cover ---------- */
+    if (!S.hubOpen) {
+      app.innerHTML = '<main class="nbhub"><div class="nbhub-inner">' +
+        '<div class="nbbook cover-book">' +
+          '<section class="nbcover">' +
+            '<div class="cv-label">' +
+              '<span class="cv-eyebrow">' + esc(CFG.teacherName || 'Ms. Goodwin') + '</span>' +
+              '<h1>' + esc(CFG.courseName || 'Algebra 3/4') + '</h1>' +
+              '<p class="cv-sub">Interactive Notebook</p>' +
+            '</div>' +
+            '<div class="cv-period" id="hubPeriod"><h2 id="periodLbl">' + (teacher ? 'Class I\'m teaching' : 'My class period') + '</h2>' +
+              '<div class="cv-periods" role="group" aria-labelledby="periodLbl">' + periodBtns('cv-pbtn') + '</div>' + pendingNote() + '</div>' +
+            '<button type="button" class="cv-open" id="cvOpen">Open the notebook <span aria-hidden="true">→</span></button>' +
+            (teacher ? '<p class="cv-who"><b>Teacher view</b>' + (BOOT.email ? ' · ' + esc(BOOT.email) : '') + '</p>' : '') +
+          '</section>' + tabsHtml(null) +
+        '</div>' + footer + '</div></main>';
+    } else {
+      /* ---------- the open notebook: unit contents + SLO page ---------- */
+      var u = unitById(S.hubUnit) || units[0];
+      var list = unitObjs(u);
+      if (S.hubObj && !list.some(function (o) { return o.id === S.hubObj; })) S.hubObj = null;
+      var narrow = window.matchMedia && window.matchMedia('(max-width: 820px)').matches;
+      if (!S.hubObj && !narrow) { var firstReady = list.filter(ready)[0]; S.hubObj = firstReady ? firstReady.id : null; }
+      var cur = list.filter(function (o) { return o.id === S.hubObj; })[0];
+
+      var toc = '<header class="pg-head"><span class="pg-eyebrow">' + esc(tabLabel(u)) + '</span><h2>' + esc(unitTitle(u) || u.name) + '</h2></header>';
+      if (!list.length) toc += '<p class="pg-empty">Coming soon. Nothing in this unit yet.</p>';
+      else toc += '<ol class="toc">' + list.map(function (o) {
+        var n = rowsFor(o).length;
+        return '<li><button type="button" class="toc-row' + (n ? '' : ' is-empty') + '" data-obj="' + esc(o.id) + '"' + (cur && cur.id === o.id ? ' aria-current="true"' : '') + '>' +
+          (isSlo(o) ? '<span class="toc-num">' + esc(o.id) + '</span>' : '') + '<span class="toc-name">' + esc(o.name) + '</span>' +
+          '<span class="toc-dots" aria-hidden="true"></span><span class="toc-count">' + (n ? n + (n === 1 ? ' set' : ' sets') : 'soon') + '</span></button></li>';
+      }).join('') + '</ol>';
+
+      var page = '';
+      if (cur) {
+        var rows = rowsFor(cur);
+        page = '<header class="pg-head"><button type="button" class="pg-back" id="pgBack">‹ ' + esc(tabLabel(u)) + ' contents</button>' +
+          '<span class="pg-eyebrow">' + (isSlo(cur) ? 'SLO ' + esc(cur.id) : esc(tabLabel(u))) + (cur.teacherOnly ? ' · teacher only' : '') + '</span>' +
+          '<h2>' + esc(cur.name) + '</h2></header>';
+        if (!rows.length) page += '<p class="pg-empty">Nothing here yet.</p>';
+        else page += '<ul class="sets">' + rows.map(function (row, i) {
           var label = row.m.label ? pagesLabel(row.m) : '';
           var title = String(row.m.title || (row.lesson && row.lesson.title) || '').split(' · ');
-          r.innerHTML = '<div class="hub-what">' + (label ? '<span class="pg">' + esc(label) + '</span>' : '') +
-            '<span class="t">' + esc(title[0]) + '</span>' + (title.length > 1 ? '<span class="sub">' + esc(title.slice(1).join(' · ')) + '</span>' : '') + '</div>' +
-            '<div class="hub-btns">' + (row.lesson ? videoBtn(row.lesson) : '') + ytBtns(row.m.videos) +
-            (!row.lesson && !(row.m.videos || []).length && lessonBase ? '<span class="hub-btn none">No video yet</span>' : '') +
-            (row.sid ? '<button type="button" class="hub-btn notes">' + NOTES_IC + 'Live notes</button>' : '') + '</div>';
-          var nb = r.querySelector('.notes');
-          if (nb) nb.addEventListener('click', function () { liveNotes(o.id, row.sid); });
-          cards.appendChild(r);
-        });
-        card.appendChild(cards);
-        box.appendChild(card);
+          var vids = (row.m.videos || []).filter(function (v) { return v && /^https:\/\//.test(v.url || ''); });
+          var btns = '';
+          if (row.lesson && lessonBase) btns += '<a class="set-btn video" href="' + esc(lessonBase + encodeURIComponent(row.lesson.slug)) + '"><span class="ic" aria-hidden="true">▶</span>Video / Slides</a>';
+          vids.forEach(function (v) {
+            btns += '<a class="set-btn video" href="' + esc(v.url) + '" target="_blank" rel="noopener" title="Opens YouTube"><span class="ic" aria-hidden="true">▶</span>' +
+              esc(vids.length > 1 ? 'Video ' + (v.label || '') : 'Video') + '</a>';
+          });
+          if (!btns && lessonBase) btns += '<span class="set-btn none">No video yet</span>';
+          if (row.sid) btns += '<button type="button" class="set-btn notes" data-sid="' + esc(row.sid) + '">' +
+            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8M7 11l3-3 2 2 4-4"/></svg>Live notes</button>';
+          return '<li class="set"><div class="set-what">' + (label ? '<span class="set-pg">' + esc(label) + '</span>' : '') +
+            '<span class="set-t">' + esc(title[0]) + (title.length > 1 ? ' <span class="set-sub">· ' + esc(title.slice(1).join(' · ')) + '</span>' : '') + '</span></div>' +
+            '<div class="set-btns">' + btns + '</div></li>';
+        }).join('') + '</ul>';
+      } else {
+        page = '<p class="pg-empty pg-hint">' + (list.length ? 'Pick an SLO from the contents.' : '') + '</p>';
+      }
+
+      app.innerHTML = '<main class="nbhub open"><div class="nbhub-inner">' +
+        '<div class="nbbar">' +
+          '<button type="button" class="nbbar-cover" id="toCover" title="Back to the cover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg><span>' + esc(CFG.courseName || 'Algebra 3/4') + '</span></button>' +
+          '<div class="nbbar-period" id="hubPeriod"><span class="lbl" id="periodLbl">' + (teacher ? 'Teaching' : 'Period') + '</span>' +
+            '<div class="nb-periods" role="group" aria-labelledby="periodLbl">' + periodBtns('nb-pbtn') + '</div></div>' +
+        '</div>' + pendingNote() +
+        '<div class="nbbook open-book' + (cur ? ' has-slo' : '') + '" style="--u:' + esc(u.color || '#e9edf3') + '">' +
+          '<div class="spread-pages">' +
+            '<section class="nbpage toc-page" aria-label="' + esc(tabLabel(u)) + ' contents">' + toc + '</section>' +
+            '<section class="nbpage slo-page" aria-live="polite">' + page + '</section>' +
+          '</div>' + tabsHtml(u.id) +
+        '</div>' + footer + '</div></main>';
+    }
+
+    /* ---------- wiring ---------- */
+    function pickPeriod(id) {
+      S.period = id; store('nb.period', id);
+      if (S.pending) { var go = S.pending; S.pending = null; openNotebook(S.period, go.oid, go.sid); return; }
+      app.querySelectorAll('[data-period]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-period') === id)); });
+    }
+    app.querySelectorAll('[data-period]').forEach(function (b) { b.addEventListener('click', function () { pickPeriod(b.getAttribute('data-period')); }); });
+    app.querySelectorAll('.nbtab').forEach(function (b) {
+      b.addEventListener('click', function () {
+        S.hubOpen = true; S.hubUnit = b.getAttribute('data-unit'); S.hubObj = null;
+        store('nb.hubUnit', S.hubUnit); renderLanding(); window.scrollTo(0, 0);
       });
-      det.appendChild(box);
-      list.appendChild(det);
+    });
+    var openBtn = $('#cvOpen');
+    if (openBtn) openBtn.addEventListener('click', function () {
+      S.hubOpen = true; if (S.hubUnit == null) S.hubUnit = store('nb.hubUnit');
+      renderLanding(); window.scrollTo(0, 0);
+    });
+    var toCover = $('#toCover');
+    if (toCover) toCover.addEventListener('click', function () { S.hubOpen = false; S.pending = null; renderLanding(); window.scrollTo(0, 0); });
+    app.querySelectorAll('.toc-row').forEach(function (b) {
+      b.addEventListener('click', function () {
+        S.hubObj = b.getAttribute('data-obj'); renderLanding();
+        var pg = $('.slo-page'); if (pg && window.matchMedia('(max-width: 820px)').matches) window.scrollTo(0, 0);
+      });
+    });
+    var back = $('#pgBack');
+    if (back) back.addEventListener('click', function () { S.hubObj = null; renderLanding(); });
+    app.querySelectorAll('.set-btn.notes').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var sid = b.getAttribute('data-sid');
+        if (S.period) { openNotebook(S.period, S.hubObj, sid); return; }
+        S.pending = { oid: S.hubObj, sid: sid };
+        renderLanding();
+        var sec = $('#hubPeriod'); if (sec) { sec.classList.add('nudge'); sec.scrollIntoView({ behavior: 'smooth', block: 'center' }); var f = sec.querySelector('button'); if (f) f.focus({ preventScroll: true }); }
+      });
     });
     var seg = $('#roleSeg');
     if (seg) seg.addEventListener('click', function (e) {
       var r = e.target.closest('button'); if (!r) return;
       S.role = r.getAttribute('data-role'); renderLanding();
     });
-    if (S.pending) setTimeout(function () { var f = grid.querySelector('button'); if (f) f.focus(); }, 50);
+    if (S.pending) setTimeout(function () { var f = app.querySelector('[data-period]'); if (f) f.focus(); }, 50);
     if (NB.onLanding) { try { NB.onLanding($('#landingFooter'), S.role); } catch (e) {} }
   }
 
@@ -308,7 +356,7 @@
     var top = h('header', { class: 'topbar' });
     var back = h('button', { class: 'homebtn', title: 'Back to the Class Hub', 'aria-label': 'Class Hub' },
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Hub</span>');
-    back.addEventListener('click', function () { flushNow(); S.spreadId = null; S.objective = null; setUrl(); renderLanding(); window.scrollTo(0, 0); });
+    back.addEventListener('click', function () { flushNow(); if (S.objective) { S.hubOpen = true; S.hubObj = S.objective; var ob = objectives().filter(function (o) { return o.id === S.objective; })[0]; if (ob) S.hubUnit = ob.unit || ''; } S.spreadId = null; S.objective = null; setUrl(); renderLanding(); window.scrollTo(0, 0); });
     top.appendChild(back);
 
     var ctx = h('div', { class: 'ctx' });
